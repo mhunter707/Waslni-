@@ -1,192 +1,153 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Waslni - وصلني</title>
   <style>
     body {
-      font-family: "Tajawal", sans-serif;
-      background-color: #121212;
+      font-family: "Cairo", sans-serif;
+      background-color: #000;
       color: white;
       text-align: center;
-      padding: 20px;
-      direction: rtl;
+      margin: 0;
+      overflow: hidden;
     }
-    h1 {
+    .logo {
       color: #FFD700;
-    }
-    input, select, button {
-      margin: 10px;
-      padding: 10px;
-      border-radius: 10px;
-      border: none;
-    }
-    button {
-      background-color: #FFD700;
+      font-size: 40px;
+      margin-top: 100px;
       font-weight: bold;
     }
-    .section {
-      margin-top: 20px;
-      border: 1px solid #FFD700;
-      border-radius: 15px;
-      padding: 20px;
+    .car {
+      width: 150px;
+      animation: moveCar 3s linear forwards;
+      margin-top: 50px;
+    }
+    @keyframes moveCar {
+      from {transform: translateX(-100vw);}
+      to {transform: translateX(100vw);}
+    }
+    .start-btn {
+      background: none;
+      border: 2px solid #FFD700;
+      color: #FFD700;
+      font-size: 20px;
+      padding: 10px 30px;
+      border-radius: 30px;
+      cursor: pointer;
+      margin-top: 40px;
+      display: none;
+    }
+    .lang-switch {
+      position: fixed;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+    }
+    .lang-switch button {
+      background: none;
+      border: none;
+      color: #FFD700;
+      font-size: 18px;
+      margin: 0 10px;
+      cursor: pointer;
+    }
+    .choice-screen {
+      display: none;
+      height: 100vh;
+      background-color: #121212;
+      color: white;
+    }
+    .choice {
+      height: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .choice:hover {
+      transform: scale(1.05);
+    }
+    .user {
+      background-color: #1f1f1f;
+      color: #FFD700;
+    }
+    .driver {
+      background-color: #FFD700;
+      color: black;
+    }
+    .nav-btns {
+      position: fixed;
+      bottom: 10px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 30px;
+    }
+    .nav-btns button {
+      background: none;
+      border: none;
+      color: #FFD700;
+      font-size: 18px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <h1>🚗 تطبيق Waslni - وصلني</h1>
 
-  <div>
-    <button onclick="showUser()">أنا مستخدم</button>
-    <button onclick="showDriver()">أنا ناقل</button>
+  <!-- شاشة البداية -->
+  <div id="splash">
+    <h1 class="logo">🚗 وصلني</h1>
+    <img src="https://i.imgur.com/gWWA7Hw.png" class="car" alt="car">
+    <button class="start-btn" id="startBtn">ابدأ</button>
+
+    <div class="lang-switch">
+      <button id="arBtn">🇸🇦 عربي</button>
+      <button id="enBtn">🇬🇧 English</button>
+    </div>
   </div>
 
-  <div id="userSection" class="section" style="display:none;">
-    <h3>بحث عن ناقل</h3>
-    <button onclick="loadDrivers()">عرض الناقلين المتاحين</button>
-    <div id="driversList"></div>
-  </div>
+  <!-- شاشة الاختيار -->
+  <div id="choiceScreen" class="choice-screen">
+    <div class="choice user" onclick="window.location.href='user.html'">📍 باحث</div>
+    <div class="choice driver" onclick="window.location.href='driver.html'">🚚 ناقل</div>
 
-  <div id="driverSection" class="section" style="display:none;">
-    <h3>تسجيل ناقل جديد</h3>
-    <input type="text" id="name" placeholder="اسم الناقل"><br>
-    <select id="type">
-      <option value="خاص">نقل خاص</option>
-      <option value="بضائع">نقل بضائع</option>
-      <option value="الاثنين">كلاهما</option>
-    </select><br>
-    <input type="text" id="area" placeholder="منطقة النقل"><br>
-    <input type="text" id="phone" placeholder="رقم الهاتف"><br>
-    <input type="number" id="price" placeholder="السعر بالعملة المحلية"><br>
-    <button onclick="saveDriver()">حفظ البيانات</button>
+    <div class="nav-btns">
+      <button onclick="goBack()">رجوع</button>
+      <button onclick="next()">التالي</button>
+    </div>
   </div>
 
   <script>
-    const binUrl = "https://www.jsonkeeper.com/b/GLDC2";
+    const startBtn = document.getElementById('startBtn');
+    const splash = document.getElementById('splash');
+    const choiceScreen = document.getElementById('choiceScreen');
 
-    function showUser() {
-      document.getElementById("userSection").style.display = "block";
-      document.getElementById("driverSection").style.display = "none";
-    }
-    function showDriver() {
-      document.getElementById("driverSection").style.display = "block";
-      document.getElementById("userSection").style.display = "none";
-    }
+    // إظهار زر ابدأ بعد 3 ثوانٍ
+    setTimeout(() => {
+      startBtn.style.display = 'block';
+    }, 3000);
 
-    async function loadDrivers() {
-      const res = await fetch(binUrl);
-      const data = await res.json();
-      let list = "<h4>الناقلين المتاحين:</h4>";
-      data.forEach(d => {
-        list += `<p>🚘 <b>${d.name}</b> (${d.type}) - ${d.area}<br>💰 السعر: ${d.price}<br>📞 ${d.phone}</p><hr>`;
-      });
-      document.getElementById("driversList").innerHTML = list;
-    }
-
-    async function saveDriver() {
-      const name = document.getElementById("name").value;
-      const type = document.getElementById("type").value;
-      const area = document.getElementById("area").value;
-      const phone = document.getElementById("phone").value;
-      const price = document.getElementById("price").value;
-
-      if(!name || !area || !phone || !price) {
-        alert("الرجاء ملء جميع الحقول");
-        return;
-      }
-
-      const res = await fetch(binUrl);
-      const oldData = await res.json();
-      oldData.push({name, type, area, phone, price});
-
-      alert("✅ تم حفظ بياناتك (سيتم ربطها لاحقاً بـ Firebase).");
-    }
-  </script>
-
-  <!-- 🔹 دردشة Firebase -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
-
-    const firebaseConfig = {
-      databaseURL: "https://waslnichat-default-rtdb.firebaseio.com/"
+    // عند الضغط على زر ابدأ
+    startBtn.onclick = () => {
+      splash.style.display = 'none';
+      choiceScreen.style.display = 'block';
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    // زر اللغة
+    document.getElementById('arBtn').onclick = () => alert('✅ تم اختيار اللغة العربية');
+    document.getElementById('enBtn').onclick = () => alert('✅ English selected');
 
-    // ✅ إدخال الاسم والصورة والخلفية
-    let userName = "";
-    let avatar = "";
-    let bgUrl = "";
-
-    document.body.innerHTML += `
-      <div id="setupBox" style="background:#222; padding:15px; border-radius:15px; margin-top:20px;">
-        <h3>🧍 أدخل اسمك واختر صورتك وخلفيتك</h3>
-        <input id="userName" placeholder="اسمك" style="padding:8px; border:none; border-radius:10px;"><br>
-        <label>صورة أفاتار:</label>
-        <select id="avatarSelect">
-          <option value="🧑‍💼">🧑‍💼</option>
-          <option value="👩‍🔧">👩‍🔧</option>
-          <option value="👨‍✈️">👨‍✈️</option>
-          <option value="🚗">🚗</option>
-          <option value="🚚">🚚</option>
-        </select><br>
-        <label>خلفية الدردشة:</label>
-        <select id="bgSelect">
-          <option value="#1a1a1a">داكنة</option>
-          <option value="https://i.imgur.com/8Km9tLL.jpeg">مدينة</option>
-          <option value="https://i.imgur.com/9h4QFJQ.jpeg">طريق</option>
-          <option value="https://i.imgur.com/xXy4DgR.jpeg">سماء</option>
-        </select><br>
-        <button id="startChat">ابدأ الدردشة</button>
-      </div>
-    `;
-
-    document.getElementById("startChat").onclick = () => {
-      userName = document.getElementById("userName").value.trim();
-      avatar = document.getElementById("avatarSelect").value;
-      bgUrl = document.getElementById("bgSelect").value;
-      if (!userName) {
-        alert("أدخل اسمك أولاً");
-        return;
-      }
-      startChat();
-    };
-
-    function startChat() {
-      document.getElementById("setupBox").remove();
-      document.body.innerHTML += `
-        <div id="chatBox" style="background:#222; padding:15px; border-radius:15px; margin-top:20px;">
-          <h3 style="color:white;">💬 دردشة مباشرة</h3>
-          <div id="messages" style="height:250px; overflow:auto; background:url('${bgUrl}') center/cover; padding:10px; border-radius:10px; color:white;"></div>
-          <input id="msgInput" placeholder="اكتب رسالتك..." style="width:70%; padding:8px; border:none; border-radius:10px;">
-          <button id="sendBtn" style="padding:8px; background:#FFD700; border:none; border-radius:10px;">إرسال</button>
-        </div>
-      `;
-
-      const msgInput = document.getElementById("msgInput");
-      const sendBtn = document.getElementById("sendBtn");
-      const messages = document.getElementById("messages");
-      const chatRef = ref(db, "messages");
-
-      sendBtn.onclick = () => {
-        const text = msgInput.value.trim();
-        if (text) {
-          push(chatRef, { name: userName, avatar, text });
-          msgInput.value = "";
-        }
-      };
-
-      onValue(chatRef, (snapshot) => {
-        messages.innerHTML = "";
-        snapshot.forEach(child => {
-          const msg = child.val();
-          messages.innerHTML += `<p>${msg.avatar} <b>${msg.name}:</b> ${msg.text}</p>`;
-        });
-        messages.scrollTop = messages.scrollHeight;
-      });
+    // أزرار التنقل
+    function goBack() {
+      splash.style.display = 'block';
+      choiceScreen.style.display = 'none';
+    }
+    function next() {
+      alert('اختر أحد الخيارين للمتابعة');
     }
   </script>
 
