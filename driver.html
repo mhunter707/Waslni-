@@ -3,21 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Waslni - صفحة الناقل</title>
+  <title>Waslni - الناقل</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500&display=swap" rel="stylesheet">
   <style>
     body {
-      background-color: #121212;
+      background-color: #000;
       color: white;
-      font-family: sans-serif;
+      font-family: "Cairo", sans-serif;
       text-align: center;
       padding: 20px;
     }
-    h1 {
-      color: #FFD700;
-    }
+    h1 { color: #FFD700; }
     input, select, button {
       display: block;
-      width: 80%;
+      width: 85%;
       margin: 10px auto;
       padding: 12px;
       border-radius: 8px;
@@ -41,27 +40,23 @@
   </style>
 </head>
 <body>
-  <h1>🚛 تسجيل بيانات الناقل</h1>
-
+  <h1 id="driverTitle">🚛 تسجيل الناقل</h1>
   <input id="name" type="text" placeholder="اسم الناقل">
-  
   <select id="type">
     <option value="خاص">خاص</option>
     <option value="بضائع">بضائع</option>
     <option value="جر">جر سيارات</option>
-    <option value="الكل">الكل</option>
   </select>
-
-  <input id="from" type="text" placeholder="من المدينة (مثلاً: الرياض)">
-  <input id="to" type="text" placeholder="إلى المدينة (مثلاً: جدة)">
-  <input id="price" type="number" placeholder="سعر النقل (بالريال)">
+  <input id="from" type="text" placeholder="من المدينة">
+  <input id="to" type="text" placeholder="إلى المدينة">
+  <input id="price" type="number" placeholder="السعر بالريال">
   <input id="phone" type="text" placeholder="رقم الهاتف">
-
+  <input id="photo" type="file" accept="image/*">
   <button onclick="addDriver()">تسجيل</button>
-
-  <h2>📋 قائمة الناقلين المسجلين</h2>
+  <h2>📋 الناقلين المسجلين</h2>
   <div id="driversList"></div>
 
+  <script src="lang.js"></script>
   <script>
     let drivers = [];
 
@@ -72,40 +67,42 @@
       const to = document.getElementById('to').value;
       const price = document.getElementById('price').value;
       const phone = document.getElementById('phone').value;
+      const photo = document.getElementById('photo').files[0];
 
       if (!name || !from || !to || !price || !phone) {
-        alert("⚠️ الرجاء تعبئة جميع البيانات!");
+        alert("⚠️ يرجى تعبئة جميع الحقول");
         return;
       }
 
-      const newDriver = { name, type, from, to, price, phone };
-      drivers.push(newDriver);
-      showDrivers();
-
-      // تنظيف الحقول بعد التسجيل
-      document.getElementById('name').value = '';
-      document.getElementById('from').value = '';
-      document.getElementById('to').value = '';
-      document.getElementById('price').value = '';
-      document.getElementById('phone').value = '';
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const newDriver = { name, type, from, to, price, phone, photo: e.target.result };
+        drivers.push(newDriver);
+        showDrivers();
+      };
+      if (photo) reader.readAsDataURL(photo);
+      else showDrivers();
     }
 
     function showDrivers() {
       const list = document.getElementById('driversList');
       list.innerHTML = '';
-
-      drivers.forEach((d, i) => {
+      drivers.forEach(d => {
         list.innerHTML += `
           <div class="driver-card">
+            ${d.photo ? `<img src="${d.photo}" width="100%" style="border-radius:10px;">` : ''}
             <h3>${d.name}</h3>
-            <p>النوع: ${d.type}</p>
-            <p>من: ${d.from} → إلى: ${d.to}</p>
+            <p>🚚 النوع: ${d.type}</p>
+            <p>📍 من: ${d.from} → إلى: ${d.to}</p>
             <p>💰 السعر: ${d.price} ريال</p>
             <p>📞 الهاتف: ${d.phone}</p>
           </div>
         `;
       });
     }
+
+    const lang = localStorage.getItem('lang') || 'ar';
+    setLang(lang);
   </script>
 </body>
 </html>
