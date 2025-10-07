@@ -6,80 +6,177 @@
   <title>Waslni - وصلني</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: 'Tajawal', sans-serif;
       background-color: #121212;
       color: white;
+      margin: 0;
+      padding: 0;
       text-align: center;
-      padding: 20px;
     }
     h1 {
       color: #FFD700;
+      font-size: 2.5em;
+      margin-top: 30vh;
     }
-    input, select, button {
+    .screen {
+      display: none;
+    }
+    .btn {
+      background-color: #FFD700;
+      border: none;
+      color: #000;
+      font-weight: bold;
+      padding: 15px 25px;
+      border-radius: 15px;
       margin: 10px;
+      font-size: 1.2em;
+      width: 80%;
+    }
+    .split {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100vh;
+    }
+    select, input {
+      width: 80%;
       padding: 10px;
       border-radius: 10px;
       border: none;
-    }
-    button {
-      background-color: #FFD700;
-      font-weight: bold;
+      margin: 8px;
     }
     .section {
-      margin-top: 20px;
       border: 1px solid #FFD700;
       border-radius: 15px;
       padding: 20px;
+      margin: 20px;
     }
   </style>
 </head>
 <body>
-  <h1>🚗 تطبيق Waslni - وصلني</h1>
-
-  <div>
-    <button onclick="showUser()">أنا مستخدم</button>
-    <button onclick="showDriver()">أنا ناقل</button>
+  <!-- شاشة البداية -->
+  <div id="startScreen">
+    <h1>🚗 Waslni - وصلني</h1>
+    <p>جارٍ التحميل...</p>
   </div>
 
-  <div id="userSection" class="section" style="display:none;">
-    <h3>بحث عن ناقل</h3>
-    <button onclick="loadDrivers()">عرض الناقلين المتاحين</button>
+  <!-- شاشة اختيار المستخدم / الناقل -->
+  <div id="choiceScreen" class="split screen">
+    <button class="btn" onclick="showUser()">أنا مستخدم</button>
+    <button class="btn" onclick="showDriver()">أنا ناقل</button>
+  </div>
+
+  <!-- واجهة المستخدم -->
+  <div id="userSection" class="section screen">
+    <h2>🔍 البحث عن ناقل</h2>
+    <select id="countrySelect" onchange="loadCities()">
+      <option value="">اختر الدولة</option>
+    </select>
+    <select id="citySelect">
+      <option value="">اختر المدينة</option>
+    </select><br>
+    <button class="btn" onclick="loadDrivers()">عرض الناقلين المتاحين</button>
     <div id="driversList"></div>
   </div>
 
-  <div id="driverSection" class="section" style="display:none;">
-    <h3>تسجيل ناقل جديد</h3>
+  <!-- واجهة الناقل -->
+  <div id="driverSection" class="section screen">
+    <h2>📝 تسجيل ناقل جديد</h2>
     <input type="text" id="name" placeholder="اسم الناقل"><br>
     <select id="type">
       <option value="خاص">نقل خاص</option>
       <option value="بضائع">نقل بضائع</option>
       <option value="الاثنين">كلاهما</option>
     </select><br>
-    <input type="text" id="area" placeholder="منطقة النقل"><br>
+    <select id="countryDriver" onchange="loadDriverCities()">
+      <option value="">اختر الدولة</option>
+    </select>
+    <select id="cityDriver">
+      <option value="">اختر المدينة</option>
+    </select><br>
     <input type="text" id="phone" placeholder="رقم الهاتف"><br>
     <input type="number" id="price" placeholder="السعر بالعملة المحلية"><br>
-    <button onclick="saveDriver()">حفظ البيانات</button>
+    <button class="btn" onclick="saveDriver()">حفظ البيانات</button>
   </div>
 
   <script>
-    // 🟡 هذا هو رابط قاعدة البيانات الخاصة بك من JSONKeeper:
     const binUrl = "https://www.jsonkeeper.com/b/GLDC2";
 
-    function showUser() {
-      document.getElementById("userSection").style.display = "block";
-      document.getElementById("driverSection").style.display = "none";
+    const countries = {
+      "ليبيا": ["طرابلس", "بنغازي", "مصراتة", "البيضاء", "سبها", "درنة", "سرت", "زليتن", "الخمس", "غريان", "طبرق"],
+      "مصر": ["القاهرة", "الإسكندرية", "الجيزة", "أسوان", "الأقصر", "طنطا", "المنصورة"],
+      "السعودية": ["الرياض", "جدة", "مكة", "المدينة", "الدمام", "الطائف"],
+      "الجزائر": ["الجزائر العاصمة", "وهران", "قسنطينة", "سطيف", "تلمسان", "باتنة"],
+      "المغرب": ["الرباط", "الدار البيضاء", "مراكش", "فاس", "طنجة", "أكادير"],
+      "تونس": ["تونس", "صفاقس", "سوسة", "بنزرت", "نابل", "قابس"],
+      "الإمارات": ["أبوظبي", "دبي", "الشارقة", "العين", "رأس الخيمة"],
+      "الأردن": ["عمان", "إربد", "الزرقاء", "الكرك", "العقبة"],
+      "العراق": ["بغداد", "البصرة", "الموصل", "أربيل", "النجف"],
+      "السودان": ["الخرطوم", "أم درمان", "بورتسودان", "مدني"],
+      "فلسطين": ["القدس", "غزة", "نابلس", "رام الله"],
+      "لبنان": ["بيروت", "طرابلس", "صيدا", "زحلة"],
+      "سوريا": ["دمشق", "حلب", "حمص", "اللاذقية", "حماة"],
+      "اليمن": ["صنعاء", "عدن", "تعز", "الحديدة", "إب"],
+      "عمان": ["مسقط", "صلالة", "نزوى", "صور"],
+      "الكويت": ["الكويت", "حولي", "الفروانية", "الأحمدي"],
+      "قطر": ["الدوحة", "الريان", "الوكرة"],
+      "البحرين": ["المنامة", "المحرق", "سترة", "رفاع"],
+      "موريتانيا": ["نواكشوط", "نواذيبو", "أطار", "كيفه"]
+    };
+
+    // تحميل الدول في القوائم
+    function loadCountries() {
+      const countrySelects = [document.getElementById("countrySelect"), document.getElementById("countryDriver")];
+      countrySelects.forEach(select => {
+        select.innerHTML = '<option value="">اختر الدولة</option>';
+        for (let c in countries) {
+          const opt = document.createElement("option");
+          opt.value = c;
+          opt.textContent = c;
+          select.appendChild(opt);
+        }
+      });
     }
-    function showDriver() {
-      document.getElementById("driverSection").style.display = "block";
-      document.getElementById("userSection").style.display = "none";
+
+    function loadCities() {
+      const country = document.getElementById("countrySelect").value;
+      const citySelect = document.getElementById("citySelect");
+      citySelect.innerHTML = '<option value="">اختر المدينة</option>';
+      if (countries[country]) {
+        countries[country].forEach(city => {
+          const opt = document.createElement("option");
+          opt.value = city;
+          opt.textContent = city;
+          citySelect.appendChild(opt);
+        });
+      }
+    }
+
+    function loadDriverCities() {
+      const country = document.getElementById("countryDriver").value;
+      const citySelect = document.getElementById("cityDriver");
+      citySelect.innerHTML = '<option value="">اختر المدينة</option>';
+      if (countries[country]) {
+        countries[country].forEach(city => {
+          const opt = document.createElement("option");
+          opt.value = city;
+          opt.textContent = city;
+          citySelect.appendChild(opt);
+        });
+      }
     }
 
     async function loadDrivers() {
       const res = await fetch(binUrl);
       const data = await res.json();
-      let list = "<h4>الناقلين المتاحين:</h4>";
-      data.forEach(d => {
-        list += `<p>🚘 <b>${d.name}</b> (${d.type}) - ${d.area}<br>💰 السعر: ${d.price}<br>📞 ${d.phone}</p><hr>`;
+      const country = document.getElementById("countrySelect").value;
+      const city = document.getElementById("citySelect").value;
+
+      let list = "<h3>🚘 الناقلين المتاحين:</h3>";
+      const filtered = data.filter(d => d.country === country && d.city === city);
+      if (filtered.length === 0) list += "<p>لا يوجد ناقلين في هذه المنطقة حاليا</p>";
+      filtered.forEach(d => {
+        list += `<p><b>${d.name}</b> (${d.type})<br>📍 ${d.city}, ${d.country}<br>💰 ${d.price}<br>📞 ${d.phone}</p><hr>`;
       });
       document.getElementById("driversList").innerHTML = list;
     }
@@ -87,24 +184,37 @@
     async function saveDriver() {
       const name = document.getElementById("name").value;
       const type = document.getElementById("type").value;
-      const area = document.getElementById("area").value;
+      const country = document.getElementById("countryDriver").value;
+      const city = document.getElementById("cityDriver").value;
       const phone = document.getElementById("phone").value;
       const price = document.getElementById("price").value;
 
-      if(!name || !area || !phone || !price) {
+      if (!name || !country || !city || !phone || !price) {
         alert("الرجاء ملء جميع الحقول");
         return;
       }
 
-      const res = await fetch(binUrl);
-      const oldData = await res.json();
-      oldData.push({name, type, area, phone, price});
+      alert("✅ تم تسجيل بياناتك بنجاح (سيتم الحفظ الكامل لاحقًا)");
+    }
 
-      // ملاحظة: JSONKeeper لا يسمح بالحفظ مباشرة من الكود
-      // لذلك التحديث اليدوي يتم لاحقًا من لوحة JSONKeeper عند الحاجة.
-      alert("✅ تم حفظ بياناتك (تحديث الحفظ الكامل لاحقًا).");
+    // عرض الشاشة بالتتابع
+    window.onload = () => {
+      setTimeout(() => {
+        document.getElementById("startScreen").style.display = "none";
+        document.getElementById("choiceScreen").style.display = "flex";
+        loadCountries();
+      }, 2000);
+    };
+
+    function showUser() {
+      document.getElementById("choiceScreen").style.display = "none";
+      document.getElementById("userSection").style.display = "block";
+    }
+
+    function showDriver() {
+      document.getElementById("choiceScreen").style.display = "none";
+      document.getElementById("driverSection").style.display = "block";
     }
   </script>
 </body>
 </html>
-<!-- تحديث بسيط 🔄 -->
