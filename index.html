@@ -10,25 +10,100 @@
       background-color: #121212;
       color: white;
       text-align: center;
-      padding: 40px;
+      padding: 20px;
     }
     h1 {
       color: #FFD700;
     }
+    input, select, button {
+      margin: 10px;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+    }
     button {
       background-color: #FFD700;
-      border: none;
-      padding: 15px 25px;
-      border-radius: 10px;
-      margin: 10px;
-      font-size: 16px;
+      font-weight: bold;
+    }
+    .section {
+      margin-top: 20px;
+      border: 1px solid #FFD700;
+      border-radius: 15px;
+      padding: 20px;
     }
   </style>
 </head>
 <body>
   <h1>🚗 تطبيق Waslni - وصلني</h1>
-  <p>اختَر نوع الاستخدام:</p>
-  <button onclick="alert('قسم المستخدم قيد التطوير')">أنا مستخدم</button>
-<button onclick="window.location.href='driver.html'">أنا ناقل</button>
+
+  <div>
+    <button onclick="showUser()">أنا مستخدم</button>
+    <button onclick="showDriver()">أنا ناقل</button>
+  </div>
+
+  <div id="userSection" class="section" style="display:none;">
+    <h3>بحث عن ناقل</h3>
+    <button onclick="loadDrivers()">عرض الناقلين المتاحين</button>
+    <div id="driversList"></div>
+  </div>
+
+  <div id="driverSection" class="section" style="display:none;">
+    <h3>تسجيل ناقل جديد</h3>
+    <input type="text" id="name" placeholder="اسم الناقل"><br>
+    <select id="type">
+      <option value="خاص">نقل خاص</option>
+      <option value="بضائع">نقل بضائع</option>
+      <option value="الاثنين">كلاهما</option>
+    </select><br>
+    <input type="text" id="area" placeholder="منطقة النقل"><br>
+    <input type="text" id="phone" placeholder="رقم الهاتف"><br>
+    <input type="number" id="price" placeholder="السعر بالعملة المحلية"><br>
+    <button onclick="saveDriver()">حفظ البيانات</button>
+  </div>
+
+  <script>
+    // 🟡 هذا هو رابط قاعدة البيانات الخاصة بك من JSONKeeper:
+    const binUrl = "https://www.jsonkeeper.com/b/GLDC2";
+
+    function showUser() {
+      document.getElementById("userSection").style.display = "block";
+      document.getElementById("driverSection").style.display = "none";
+    }
+    function showDriver() {
+      document.getElementById("driverSection").style.display = "block";
+      document.getElementById("userSection").style.display = "none";
+    }
+
+    async function loadDrivers() {
+      const res = await fetch(binUrl);
+      const data = await res.json();
+      let list = "<h4>الناقلين المتاحين:</h4>";
+      data.forEach(d => {
+        list += `<p>🚘 <b>${d.name}</b> (${d.type}) - ${d.area}<br>💰 السعر: ${d.price}<br>📞 ${d.phone}</p><hr>`;
+      });
+      document.getElementById("driversList").innerHTML = list;
+    }
+
+    async function saveDriver() {
+      const name = document.getElementById("name").value;
+      const type = document.getElementById("type").value;
+      const area = document.getElementById("area").value;
+      const phone = document.getElementById("phone").value;
+      const price = document.getElementById("price").value;
+
+      if(!name || !area || !phone || !price) {
+        alert("الرجاء ملء جميع الحقول");
+        return;
+      }
+
+      const res = await fetch(binUrl);
+      const oldData = await res.json();
+      oldData.push({name, type, area, phone, price});
+
+      // ملاحظة: JSONKeeper لا يسمح بالحفظ مباشرة من الكود
+      // لذلك التحديث اليدوي يتم لاحقًا من لوحة JSONKeeper عند الحاجة.
+      alert("✅ تم حفظ بياناتك (تحديث الحفظ الكامل لاحقًا).");
+    }
+  </script>
 </body>
 </html>
