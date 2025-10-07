@@ -6,11 +6,12 @@
   <title>Waslni - وصلني</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: "Tajawal", sans-serif;
       background-color: #121212;
       color: white;
       text-align: center;
       padding: 20px;
+      direction: rtl;
     }
     h1 {
       color: #FFD700;
@@ -62,7 +63,6 @@
   </div>
 
   <script>
-    // 🔹 قاعدة بيانات JSON مؤقتة
     const binUrl = "https://www.jsonkeeper.com/b/GLDC2";
 
     function showUser() {
@@ -100,11 +100,11 @@
       const oldData = await res.json();
       oldData.push({name, type, area, phone, price});
 
-      alert("✅ تم حفظ بياناتك (سيتم ربط الحفظ لاحقًا بـ Firebase).");
+      alert("✅ تم حفظ بياناتك (سيتم ربطها لاحقاً بـ Firebase).");
     }
   </script>
 
-  <!-- 🔹 نظام الدردشة المتصل بـ Firebase -->
+  <!-- 🔹 دردشة Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
     import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
@@ -116,36 +116,78 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // إنشاء واجهة الدردشة
+    // ✅ إدخال الاسم والصورة والخلفية
+    let userName = "";
+    let avatar = "";
+    let bgUrl = "";
+
     document.body.innerHTML += `
-      <div id="chatBox" style="background:#222; padding:15px; border-radius:15px; margin-top:20px;">
-        <h3 style="color:white;">💬 دردشة مباشرة</h3>
-        <div id="messages" style="height:200px; overflow:auto; background:#333; padding:10px; border-radius:10px; color:white;"></div>
-        <input id="msgInput" placeholder="اكتب رسالتك..." style="width:70%; padding:8px; border:none; border-radius:10px;">
-        <button id="sendBtn" style="padding:8px; background:#FFD700; border:none; border-radius:10px;">إرسال</button>
+      <div id="setupBox" style="background:#222; padding:15px; border-radius:15px; margin-top:20px;">
+        <h3>🧍 أدخل اسمك واختر صورتك وخلفيتك</h3>
+        <input id="userName" placeholder="اسمك" style="padding:8px; border:none; border-radius:10px;"><br>
+        <label>صورة أفاتار:</label>
+        <select id="avatarSelect">
+          <option value="🧑‍💼">🧑‍💼</option>
+          <option value="👩‍🔧">👩‍🔧</option>
+          <option value="👨‍✈️">👨‍✈️</option>
+          <option value="🚗">🚗</option>
+          <option value="🚚">🚚</option>
+        </select><br>
+        <label>خلفية الدردشة:</label>
+        <select id="bgSelect">
+          <option value="#1a1a1a">داكنة</option>
+          <option value="https://i.imgur.com/8Km9tLL.jpeg">مدينة</option>
+          <option value="https://i.imgur.com/9h4QFJQ.jpeg">طريق</option>
+          <option value="https://i.imgur.com/xXy4DgR.jpeg">سماء</option>
+        </select><br>
+        <button id="startChat">ابدأ الدردشة</button>
       </div>
     `;
 
-    const msgInput = document.getElementById("msgInput");
-    const sendBtn = document.getElementById("sendBtn");
-    const messages = document.getElementById("messages");
-    const chatRef = ref(db, "messages");
-
-    sendBtn.onclick = () => {
-      const text = msgInput.value.trim();
-      if (text) {
-        push(chatRef, { text });
-        msgInput.value = "";
+    document.getElementById("startChat").onclick = () => {
+      userName = document.getElementById("userName").value.trim();
+      avatar = document.getElementById("avatarSelect").value;
+      bgUrl = document.getElementById("bgSelect").value;
+      if (!userName) {
+        alert("أدخل اسمك أولاً");
+        return;
       }
+      startChat();
     };
 
-    onValue(chatRef, (snapshot) => {
-      messages.innerHTML = "";
-      snapshot.forEach(child => {
-        const msg = child.val().text;
-        messages.innerHTML += `<p>🗨️ ${msg}</p>`;
+    function startChat() {
+      document.getElementById("setupBox").remove();
+      document.body.innerHTML += `
+        <div id="chatBox" style="background:#222; padding:15px; border-radius:15px; margin-top:20px;">
+          <h3 style="color:white;">💬 دردشة مباشرة</h3>
+          <div id="messages" style="height:250px; overflow:auto; background:url('${bgUrl}') center/cover; padding:10px; border-radius:10px; color:white;"></div>
+          <input id="msgInput" placeholder="اكتب رسالتك..." style="width:70%; padding:8px; border:none; border-radius:10px;">
+          <button id="sendBtn" style="padding:8px; background:#FFD700; border:none; border-radius:10px;">إرسال</button>
+        </div>
+      `;
+
+      const msgInput = document.getElementById("msgInput");
+      const sendBtn = document.getElementById("sendBtn");
+      const messages = document.getElementById("messages");
+      const chatRef = ref(db, "messages");
+
+      sendBtn.onclick = () => {
+        const text = msgInput.value.trim();
+        if (text) {
+          push(chatRef, { name: userName, avatar, text });
+          msgInput.value = "";
+        }
+      };
+
+      onValue(chatRef, (snapshot) => {
+        messages.innerHTML = "";
+        snapshot.forEach(child => {
+          const msg = child.val();
+          messages.innerHTML += `<p>${msg.avatar} <b>${msg.name}:</b> ${msg.text}</p>`;
+        });
+        messages.scrollTop = messages.scrollHeight;
       });
-    });
+    }
   </script>
 
 </body>
