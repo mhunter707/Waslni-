@@ -1,154 +1,89 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Waslni - وصلني</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>وصلني - Waslni</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: "Cairo", sans-serif;
-      background-color: #000;
-      color: white;
+      background: linear-gradient(180deg, #000000, #111);
+      color: #FFD700;
       text-align: center;
       margin: 0;
+      padding: 0;
       overflow: hidden;
     }
     .logo {
-      color: #FFD700;
-      font-size: 40px;
-      margin-top: 100px;
+      font-size: 45px;
+      margin-top: 80px;
       font-weight: bold;
+      animation: glow 2s infinite alternate;
+    }
+    @keyframes glow {
+      from { text-shadow: 0 0 5px #ffd700; }
+      to { text-shadow: 0 0 20px #ffea00; }
     }
     .car {
-      width: 150px;
-      animation: moveCar 3s linear forwards;
-      margin-top: 50px;
+      width: 180px;
+      margin: 50px auto;
+      animation: moveCar 3s linear infinite alternate;
     }
     @keyframes moveCar {
-      from {transform: translateX(-100vw);}
-      to {transform: translateX(100vw);}
+      from {transform: translateX(-40px);}
+      to {transform: translateX(40px);}
     }
-    .start-btn {
-      background: none;
-      border: 2px solid #FFD700;
-      color: #FFD700;
-      font-size: 20px;
-      padding: 10px 30px;
+    button {
+      border: none;
       border-radius: 30px;
+      font-size: 20px;
+      padding: 12px 30px;
       cursor: pointer;
-      margin-top: 40px;
-      display: none;
+      background-color: #FFD700;
+      color: #000;
+      font-weight: bold;
+      margin: 10px;
+      transition: 0.3s;
+    }
+    button:hover {
+      transform: scale(1.1);
+      background-color: #fff15a;
     }
     .lang-switch {
       position: fixed;
       bottom: 20px;
-      left: 0;
-      right: 0;
-    }
-    .lang-switch button {
-      background: none;
-      border: none;
-      color: #FFD700;
-      font-size: 18px;
-      margin: 0 10px;
-      cursor: pointer;
-    }
-    .choice-screen {
-      display: none;
-      height: 100vh;
-      background-color: #121212;
-      color: white;
-    }
-    .choice {
-      height: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    .choice:hover {
-      transform: scale(1.05);
-    }
-    .user {
-      background-color: #1f1f1f;
-      color: #FFD700;
-    }
-    .driver {
-      background-color: #FFD700;
-      color: black;
-    }
-    .nav-btns {
-      position: fixed;
-      bottom: 10px;
       width: 100%;
       display: flex;
-      justify-content: space-between;
-      padding: 0 30px;
-    }
-    .nav-btns button {
-      background: none;
-      border: none;
-      color: #FFD700;
-      font-size: 18px;
-      cursor: pointer;
+      justify-content: center;
+      gap: 10px;
     }
   </style>
 </head>
 <body>
 
-  <!-- شاشة البداية -->
-  <div id="splash">
-    <h1 class="logo">🚗 وصلني</h1>
-    <img src="https://i.imgur.com/gWWA7Hw.png" class="car" alt="car">
-    <button class="start-btn" id="startBtn">ابدأ</button>
+  <h1 class="logo" id="title">🚗 وصلني</h1>
+  <img src="https://i.imgur.com/gWWA7Hw.png" class="car" alt="car">
 
-    <div class="lang-switch">
-      <button id="arBtn">🇸🇦 عربي</button>
-      <button id="enBtn">🇬🇧 English</button>
-    </div>
+  <button id="startBtn">ابدأ</button>
+
+  <div class="lang-switch">
+    <button onclick="setLang('ar')">🇸🇦 عربي</button>
+    <button onclick="setLang('en')">🇬🇧 English</button>
+    <button onclick="setLang('fr')">🇫🇷 Français</button>
   </div>
 
-  <!-- شاشة الاختيار -->
-  <div id="choiceScreen" class="choice-screen">
-    <div class="choice user" onclick="window.location.href='user.html'">📍 باحث</div>
-    <div class="choice driver" onclick="window.location.href='driver.html'">🚚 ناقل</div>
-
-    <div class="nav-btns">
-      <button onclick="goBack()">رجوع</button>
-      <button onclick="next()">التالي</button>
-    </div>
-  </div>
-
+  <script src="lang.js"></script>
   <script>
     const startBtn = document.getElementById('startBtn');
-    const splash = document.getElementById('splash');
-    const choiceScreen = document.getElementById('choiceScreen');
 
-    // إظهار زر ابدأ بعد 3 ثوانٍ
-    setTimeout(() => {
-      startBtn.style.display = 'block';
-    }, 3000);
-
-    // عند الضغط على زر ابدأ
     startBtn.onclick = () => {
-      splash.style.display = 'none';
-      choiceScreen.style.display = 'block';
+      window.location.href = "role.html";
     };
 
-    // زر اللغة
-    document.getElementById('arBtn').onclick = () => alert('✅ تم اختيار اللغة العربية');
-    document.getElementById('enBtn').onclick = () => alert('✅ English selected');
-
-    // أزرار التنقل
-    function goBack() {
-      splash.style.display = 'block';
-      choiceScreen.style.display = 'none';
-    }
-    function next() {
-      alert('اختر أحد الخيارين للمتابعة');
-    }
+    // تحميل اللغة من التخزين المحلي
+    const lang = localStorage.getItem('lang') || 'ar';
+    setLang(lang);
   </script>
 
 </body>
