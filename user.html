@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Waslni - المستخدم</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #FFD700;
+    }
+    input, select, button {
+      display: block;
+      width: 80%;
+      margin: 10px auto;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+    }
+    button {
+      background-color: #FFD700;
+      color: black;
+      font-weight: bold;
+    }
+    .car {
+      border: 1px solid #FFD700;
+      border-radius: 10px;
+      padding: 10px;
+      margin: 10px auto;
+      width: 80%;
+      background-color: #1e1e1e;
+    }
+  </style>
+</head>
+<body>
+  <h1>🚗 البحث عن وسيلة نقل</h1>
+
+  <label>نوع النقل:</label>
+  <select id="type">
+    <option value="خاص">خاص</option>
+    <option value="بضائع">بضائع</option>
+    <option value="جر">جر سيارات</option>
+  </select>
+
+  <label>من المدينة:</label>
+  <input id="from" type="text" placeholder="مثلاً: الرياض">
+
+  <label>إلى المدينة:</label>
+  <input id="to" type="text" placeholder="مثلاً: جدة">
+
+  <button onclick="searchCars()">بحث</button>
+
+  <div id="results"></div>
+
+  <script>
+    const cars = [
+      { name: "سامي للنقل", type: "خاص", from: "الرياض", to: "جدة", price: "300 ريال" },
+      { name: "نقل البضائع السريع", type: "بضائع", from: "الدمام", to: "الرياض", price: "250 ريال" },
+      { name: "خدمة جر السيارات", type: "جر", from: "جدة", to: "مكة", price: "150 ريال" },
+    ];
+
+    function searchCars() {
+      const type = document.getElementById('type').value;
+      const from = document.getElementById('from').value;
+      const to = document.getElementById('to').value;
+      const resultsDiv = document.getElementById('results');
+
+      const filtered = cars.filter(c => 
+        c.type.includes(type) && 
+        c.from.includes(from) && 
+        c.to.includes(to)
+      );
+
+      resultsDiv.innerHTML = '';
+
+      if (filtered.length === 0) {
+        resultsDiv.innerHTML = '<p>🚘 لا توجد نتائج حالياً</p>';
+      } else {
+        filtered.forEach(c => {
+          resultsDiv.innerHTML += `
+            <div class="car">
+              <h3>${c.name}</h3>
+              <p>النوع: ${c.type}</p>
+              <p>من: ${c.from} → إلى: ${c.to}</p>
+              <p>السعر: ${c.price}</p>
+              <button onclick="alert('سيتم التواصل مع الناقل قريباً')">تواصل</button>
+            </div>
+          `;
+        });
+      }
+    }
+  </script>
+</body>
+</html>
