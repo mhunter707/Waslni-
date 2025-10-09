@@ -1,46 +1,50 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🚗 Waslni | البحث عن سائق</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🚗 المستخدم - Waslni</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: "Cairo", sans-serif;
-      background: linear-gradient(180deg, #000000, #1a1a1a);
+      background: linear-gradient(180deg, #000, #1b1b1b);
       color: #FFD700;
-      text-align: center;
       margin: 0;
       padding: 20px;
     }
 
     h1 {
-      text-shadow: 0 0 15px #FFD700;
+      text-align: center;
+      margin-bottom: 20px;
+      text-shadow: 0 0 12px #FFD700;
       animation: glow 2s infinite alternate;
     }
 
     @keyframes glow {
       from { text-shadow: 0 0 10px #FFD700; }
-      to { text-shadow: 0 0 30px #fff36b; }
+      to { text-shadow: 0 0 25px #fff36b; }
     }
 
-    .search-box {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      margin: 20px auto;
+    .filter-box {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,215,0,0.3);
+      border-radius: 15px;
+      padding: 15px;
+      box-shadow: 0 0 15px rgba(255,215,0,0.15);
+      max-width: 420px;
+      margin: 0 auto 25px;
     }
 
-    .search-box input, .search-box select {
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      border: none;
       background: rgba(255,255,255,0.1);
       color: white;
-      border: 1px solid rgba(255,215,0,0.3);
-      border-radius: 10px;
-      padding: 10px;
-      width: 45%;
-      font-family: inherit;
+      font-size: 15px;
     }
 
     button {
@@ -49,206 +53,197 @@
       font-weight: bold;
       border: none;
       border-radius: 10px;
-      padding: 10px 20px;
-      margin-top: 10px;
+      padding: 10px;
+      width: 100%;
       cursor: pointer;
+      font-size: 16px;
       transition: 0.3s;
     }
 
     button:hover {
-      background-color: #fff37c;
       transform: scale(1.05);
+      box-shadow: 0 0 15px #FFD700;
+    }
+
+    .drivers {
+      display: grid;
+      gap: 15px;
+      max-width: 450px;
+      margin: 0 auto;
     }
 
     .driver-card {
-      background-color: rgba(255,255,255,0.05);
+      background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,215,0,0.3);
-      border-radius: 10px;
+      border-radius: 15px;
       padding: 15px;
-      margin: 10px auto;
-      width: 85%;
-      color: white;
-      backdrop-filter: blur(6px);
-      box-shadow: 0 0 10px rgba(255,215,0,0.2);
+      text-align: center;
       transition: 0.3s;
-      text-align: left;
+      box-shadow: 0 0 10px rgba(255,215,0,0.15);
     }
 
     .driver-card:hover {
-      transform: scale(1.02);
+      transform: translateY(-3px);
       box-shadow: 0 0 25px rgba(255,215,0,0.4);
     }
 
     .driver-card img {
-      width: 100%;
-      border-radius: 10px;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #FFD700;
       margin-bottom: 10px;
     }
 
-    .contact-btn, .fav-btn, .chat-btn {
-      display: inline-block;
-      background: #FFD700;
-      color: #000;
-      padding: 8px 12px;
-      border-radius: 8px;
-      text-decoration: none;
+    .driver-info h3 {
+      margin: 5px 0;
+      color: #fff;
+    }
+
+    .driver-info p {
+      margin: 3px 0;
+      color: #ccc;
+      font-size: 14px;
+    }
+
+    .contact-btn {
+      background: #00ff9d;
+      color: black;
       font-weight: bold;
-      margin: 4px;
+      padding: 8px 15px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
       transition: 0.3s;
     }
 
-    .fav-btn.active {
-      background: #ff5e5e;
-      color: white;
+    .contact-btn:hover {
+      background: #19ffa8;
+      transform: scale(1.05);
     }
 
-    .stars {
-      color: gold;
-      font-size: 20px;
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
     }
 
-    .chat-box {
-      background-color: rgba(255,255,255,0.1);
-      padding: 10px;
-      border-radius: 10px;
-      display: none;
-      text-align: right;
-      margin-top: 10px;
-    }
-
-    .chat-box input {
-      width: 75%;
-      border: none;
+    .back-btn {
+      background: transparent;
+      border: 1px solid #FFD700;
+      color: #FFD700;
       border-radius: 8px;
-      padding: 5px;
+      padding: 6px 15px;
+      cursor: pointer;
     }
 
-    .chat-box button {
-      background-color: #FFD700;
+    .theme-toggle {
+      background: #FFD700;
       color: black;
-      padding: 5px 10px;
+      padding: 6px 15px;
       border-radius: 8px;
       border: none;
+      cursor: pointer;
     }
 
+    .no-results {
+      text-align: center;
+      color: #bbb;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
 
-  <h1>🔍 البحث عن ناقل</h1>
-
-  <div class="search-box">
-    <input id="fromSearch" type="text" placeholder="من المدينة">
-    <input id="toSearch" type="text" placeholder="إلى المدينة">
-    <select id="typeSearch">
-      <option value="">الكل</option>
-      <option value="خاص">🚗 خاص</option>
-      <option value="بضائع">🚚 بضائع</option>
-      <option value="جر">🚜 جر سيارات</option>
-    </select>
+  <div class="top-bar">
+    <button class="back-btn" onclick="window.location.href='role.html'">⬅ رجوع</button>
+    <h1>🚗 ابحث عن سائق</h1>
+    <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
   </div>
 
-  <button onclick="searchDrivers()">بحث 🔎</button>
+  <div class="filter-box">
+    <select id="vehicleFilter">
+      <option value="">نوع المركبة</option>
+      <option value="نقل بضائع">🚚 نقل بضائع</option>
+      <option value="نقل أشخاص">🚕 نقل أشخاص</option>
+      <option value="سحب سيارات">🚨 جر سيارات</option>
+    </select>
 
-  <div id="results"></div>
+    <input type="text" id="fromFilter" placeholder="من المدينة">
+    <input type="text" id="toFilter" placeholder="إلى المدينة">
+    <button onclick="searchDrivers()">🔍 بحث</button>
+  </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+  <div class="drivers" id="driversList"></div>
+  <p id="noResults" class="no-results" style="display:none;">🚘 لا توجد نتائج مطابقة حاليًا</p>
 
-    const firebaseConfig = {
-      apiKey: "ضع مفتاح Firebase هنا",
-      authDomain: "ضع رابط المشروع هنا",
-      databaseURL: "ضع رابط قاعدة البيانات هنا",
-      projectId: "ضع معرف المشروع هنا",
-      storageBucket: "ضع التخزين هنا",
-      messagingSenderId: "ضع المعرف هنا",
-      appId: "ضع معرف التطبيق هنا"
-    };
+  <script>
+    function loadDrivers() {
+      return JSON.parse(localStorage.getItem("driversData") || "[]");
+    }
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const driverRef = ref(db, "drivers");
-    let allDrivers = [];
+    function renderDrivers(drivers) {
+      const list = document.getElementById("driversList");
+      const noResults = document.getElementById("noResults");
 
-    onValue(driverRef, snapshot => {
-      allDrivers = [];
-      snapshot.forEach(d => {
-        allDrivers.push(d.val());
-      });
-      displayDrivers(allDrivers);
-    });
-
-    function displayDrivers(list) {
-      const container = document.getElementById("results");
-      container.innerHTML = "";
-      if (list.length === 0) {
-        container.innerHTML = "<p class='no-result'>❌ لا توجد نتائج مطابقة</p>";
+      list.innerHTML = "";
+      if (drivers.length === 0) {
+        noResults.style.display = "block";
         return;
       }
+      noResults.style.display = "none";
 
-      const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
-
-      list.forEach((d, i) => {
-        const isFav = favorites.includes(d.phone);
-        container.innerHTML += `
-          <div class="driver-card">
-            ${d.photo ? `<img src="${d.photo}" alt="صورة السائق">` : ""}
-            <h3>${d.name} ${d.vehicle ? `(${d.vehicle})` : ""}</h3>
-            <p>🚚 النوع: ${d.type}</p>
-            <p>📍 من: ${d.from} → إلى: ${d.to}</p>
-            <p>💰 السعر: ${d.price}</p>
-            <p class="stars">⭐ ${d.rating ? d.rating : "بدون تقييم بعد"}</p>
-
-            <a href="tel:${d.phone}" class="contact-btn">📞 اتصال</a>
-            <button class="fav-btn ${isFav ? "active" : ""}" onclick="toggleFavorite('${d.phone}')">❤️</button>
-            <button class="chat-btn" onclick="toggleChat(${i})">💬 دردشة</button>
-
-            <div class="chat-box" id="chat-${i}">
-              <input type="text" placeholder="اكتب رسالة...">
-              <button onclick="sendMessage(${i})">إرسال</button>
-            </div>
+      drivers.forEach(driver => {
+        const card = document.createElement("div");
+        card.className = "driver-card";
+        card.innerHTML = `
+          <img src="${driver.photo || 'https://i.imgur.com/yYgL5kR.png'}" alt="driver">
+          <div class="driver-info">
+            <h3>${driver.name}</h3>
+            <p>📞 ${driver.phone}</p>
+            <p>🚗 ${driver.vehicle}</p>
+            <p>📍 ${driver.from} → ${driver.to}</p>
+            <p>💰 ${driver.price} د.ل</p>
           </div>
+          <button class="contact-btn" onclick="contactDriver('${driver.phone}')">تواصل الآن</button>
         `;
+        list.appendChild(card);
       });
     }
 
-    window.toggleFavorite = (phone) => {
-      let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
-      if (favorites.includes(phone)) {
-        favorites = favorites.filter(f => f !== phone);
-      } else {
-        favorites.push(phone);
-      }
-      localStorage.setItem("favorites", JSON.stringify(favorites));
-      displayDrivers(allDrivers);
-    };
+    function searchDrivers() {
+      const vehicle = document.getElementById("vehicleFilter").value;
+      const from = document.getElementById("fromFilter").value.trim();
+      const to = document.getElementById("toFilter").value.trim();
 
-    window.toggleChat = (i) => {
-      const chatBox = document.getElementById(`chat-${i}`);
-      chatBox.style.display = chatBox.style.display === "block" ? "none" : "block";
-    };
-
-    window.sendMessage = (i) => {
-      const chatBox = document.getElementById(`chat-${i}`);
-      const input = chatBox.querySelector("input");
-      if (input.value.trim()) {
-        alert("💬 تم إرسال الرسالة (سيتم تفعيل الدردشة الكاملة عبر Firebase قريبًا)");
-        input.value = "";
-      }
-    };
-
-    window.searchDrivers = () => {
-      const from = document.getElementById("fromSearch").value.trim().toLowerCase();
-      const to = document.getElementById("toSearch").value.trim().toLowerCase();
-      const type = document.getElementById("typeSearch").value;
+      const allDrivers = loadDrivers();
       const filtered = allDrivers.filter(d =>
-        (!from || d.from.toLowerCase().includes(from)) &&
-        (!to || d.to.toLowerCase().includes(to)) &&
-        (!type || d.type === type)
+        (!vehicle || d.vehicle.includes(vehicle)) &&
+        (!from || d.from.includes(from)) &&
+        (!to || d.to.includes(to))
       );
-      displayDrivers(filtered);
-    };
+
+      renderDrivers(filtered);
+    }
+
+    function contactDriver(phone) {
+      alert("📞 يمكنك التواصل مع السائق على الرقم: " + phone);
+    }
+
+    function toggleTheme() {
+      const isDark = document.body.style.background.includes("#000");
+      if (isDark) {
+        document.body.style.background = "linear-gradient(180deg, #fffbe0, #ffe760)";
+        document.body.style.color = "#222";
+      } else {
+        document.body.style.background = "linear-gradient(180deg, #000, #1b1b1b)";
+        document.body.style.color = "#FFD700";
+      }
+    }
+
+    renderDrivers(loadDrivers());
   </script>
 </body>
 </html>
