@@ -8,7 +8,7 @@
   <style>
     body {
       font-family: "Cairo", sans-serif;
-      background: linear-gradient(180deg, #000000, #1c1c1c);
+      background: linear-gradient(180deg, #000000, #1a1a1a);
       color: #FFD700;
       text-align: center;
       margin: 0;
@@ -27,10 +27,10 @@
     }
 
     .form-container {
-      background: rgba(255, 215, 0, 0.1);
+      background: rgba(255, 215, 0, 0.08);
       padding: 30px;
       border-radius: 20px;
-      box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
+      box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
       width: 90%;
       max-width: 400px;
     }
@@ -140,10 +140,10 @@
           email: email,
           createdAt: new Date().toISOString()
         });
-        alert("تم إنشاء الحساب بنجاح ✅");
-        window.location.href = "index.html";
+        alert("✅ تم إنشاء الحساب بنجاح");
+        window.location.href = "role.html"; // ← الانتقال بعد التسجيل
       } catch (error) {
-        alert("خطأ: " + error.message);
+        alert("⚠️ خطأ: " + error.message);
       }
     };
 
@@ -152,10 +152,10 @@
       const password = passwordInput.value;
       try {
         await signInWithEmailAndPassword(auth, email, password);
-        alert("تم تسجيل الدخول ✅");
-        window.location.href = "index.html";
+        alert("✅ تم تسجيل الدخول بنجاح");
+        window.location.href = "role.html"; // ← الانتقال بعد الدخول
       } catch (error) {
-        alert("خطأ: " + error.message);
+        alert("⚠️ خطأ: " + error.message);
       }
     };
   </script>
