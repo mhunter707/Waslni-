@@ -1,165 +1,195 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Waslni - اختر دورك</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🚗 Waslni | اختر دورك</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500&display=swap" rel="stylesheet">
   <style>
     body {
-      background: linear-gradient(180deg, #000, #111);
-      color: #FFD700;
-      font-family: "Cairo", sans-serif;
       margin: 0;
-      padding: 0;
-      text-align: center;
+      font-family: "Cairo", sans-serif;
+      background: radial-gradient(circle at top, #000000, #1a1a1a, #000);
+      color: #FFD700;
       overflow-x: hidden;
+      text-align: center;
+      min-height: 100vh;
+      position: relative;
     }
 
-    .header {
-      margin-top: 60px;
+    .container {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      animation: fadeIn 1.5s ease;
+    }
+
+    h1 {
       font-size: 36px;
-      font-weight: bold;
-      text-shadow: 0 0 20px #FFD700;
-      animation: glow 3s infinite alternate;
+      margin-bottom: 50px;
+      color: #fff;
+      text-shadow: 0 0 15px #FFD700;
+      animation: glow 3s ease-in-out infinite alternate;
     }
 
     @keyframes glow {
-      0% { text-shadow: 0 0 5px #FFD700; }
-      100% { text-shadow: 0 0 30px #ffec70; }
+      from { text-shadow: 0 0 10px #FFD700; }
+      to { text-shadow: 0 0 30px #fffb90; }
     }
 
-    .role-container {
-      margin-top: 50px;
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 25px;
-    }
-
-    .role {
-      width: 150px;
-      height: 150px;
-      background: #1a1a1a;
+    .role-card {
+      width: 85%;
+      max-width: 350px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 215, 0, 0.3);
       border-radius: 20px;
-      border: 2px solid #FFD700;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      color: #FFD700;
-      cursor: pointer;
-      transition: 0.3s;
-      box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+      margin: 15px 0;
+      padding: 20px;
+      color: #fff;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+      transition: 0.4s;
+      animation: popUp 0.8s ease;
     }
 
-    .role:hover {
+    @keyframes popUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .role-card:hover {
       transform: scale(1.05);
-      box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
-      background: #222;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
     }
 
-    .role img {
-      width: 60px;
+    .role-card h2 {
+      color: #FFD700;
+      font-size: 24px;
       margin-bottom: 10px;
     }
 
-    select, button {
-      width: 85%;
-      margin: 15px auto;
-      padding: 12px;
-      border-radius: 10px;
-      border: none;
-      font-size: 18px;
-      font-weight: bold;
-      display: block;
-    }
-
-    select {
-      background: #1a1a1a;
-      color: #FFD700;
-      border: 2px solid #FFD700;
-      text-align: center;
+    .role-card p {
+      font-size: 16px;
+      color: #ccc;
+      margin-bottom: 15px;
     }
 
     button {
-      background: linear-gradient(90deg, #FFD700, #ffec70);
-      color: black;
-      box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+      background: #FFD700;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 25px;
+      font-size: 18px;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
     }
 
     button:hover {
-      transform: scale(1.05);
+      transform: scale(1.1);
+      background: #fff66b;
     }
 
-    .footer {
-      position: fixed;
-      bottom: 15px;
+    .background-animation {
+      position: absolute;
+      top: 0; left: 0;
       width: 100%;
-      text-align: center;
-      color: #888;
-      font-size: 14px;
+      height: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .circle {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: rgba(255, 215, 0, 0.15);
+      animation: float 10s infinite ease-in-out;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-40px) rotate(180deg); }
+    }
+
+    .lang-switch {
+      position: fixed;
+      bottom: 20px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      z-index: 5;
+    }
+
+    .lang-switch button {
+      background: #222;
+      color: #FFD700;
+      border: 1px solid #FFD700;
+      border-radius: 10px;
+      padding: 8px 15px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .lang-switch button:hover {
+      background: #FFD700;
+      color: #000;
     }
   </style>
 </head>
 <body>
 
-  <h1 class="header" id="selectRole">اختر دورك</h1>
+  <div class="background-animation">
+    <div class="circle" style="top: 10%; left: 20%; animation-delay: 0s;"></div>
+    <div class="circle" style="top: 70%; left: 60%; animation-delay: 2s;"></div>
+    <div class="circle" style="top: 40%; left: 80%; animation-delay: 4s;"></div>
+    <div class="circle" style="top: 50%; left: 10%; animation-delay: 6s;"></div>
+  </div>
 
-  <div class="role-container">
-    <div class="role" onclick="selectRole('driver')">
-      <img src="https://cdn-icons-png.flaticon.com/512/1995/1995574.png" alt="driver">
-      <span>🚛 ناقل</span>
+  <div class="container">
+    <h1 id="selectRole">🚀 اختر دورك</h1>
+
+    <div class="role-card">
+      <h2>🚛 ناقل</h2>
+      <p>أنشئ حسابك كناقل وحدد الأسعار والمناطق التي تغطيها.</p>
+      <button onclick="goTo('driver.html')">ابدأ كناقل</button>
     </div>
-    <div class="role" onclick="selectRole('user')">
-      <img src="https://cdn-icons-png.flaticon.com/512/743/743131.png" alt="user">
-      <span>🚗 مستخدم</span>
+
+    <div class="role-card">
+      <h2>🚗 سائق</h2>
+      <p>ابحث عن فرص نقل جديدة وتواصل مباشرة مع الناقلين.</p>
+      <button onclick="goTo('user.html')">ابدأ كسائق</button>
+    </div>
+
+    <div class="role-card">
+      <h2>🧭 باحث عن نقل</h2>
+      <p>ابحث بسهولة عن ناقلين وسائقين متاحين في منطقتك.</p>
+      <button onclick="goTo('search.html')">ابحث الآن</button>
     </div>
   </div>
 
-  <select id="country">
-    <option value="">🌍 اختر الدولة</option>
-    <option>ليبيا</option>
-    <option>مصر</option>
-    <option>السعودية</option>
-    <option>الإمارات</option>
-    <option>المغرب</option>
-    <option>تونس</option>
-    <option>الأردن</option>
-    <option>الكويت</option>
-  </select>
+  <div class="lang-switch">
+    <button onclick="setLang('ar')">🇸🇦 عربي</button>
+    <button onclick="setLang('en')">🇬🇧 English</button>
+    <button onclick="setLang('fr')">🇫🇷 Français</button>
+  </div>
 
-  <button onclick="goNext()">التالي ➜</button>
-
-  <div class="footer">© 2025 Waslni App - جميع الحقوق محفوظة</div>
-
+  <script src="lang.js"></script>
   <script>
-    let selectedRole = null;
+    const lang = localStorage.getItem('lang') || 'ar';
+    setLang(lang);
 
-    function selectRole(role) {
-      selectedRole = role;
-      const sound = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_c9a0e1b7a0.mp3");
-      sound.play();
-      document.querySelectorAll('.role').forEach(el => el.style.border = "2px solid #FFD70055");
-      event.currentTarget.style.border = "3px solid #FFD700";
-      event.currentTarget.style.boxShadow = "0 0 25px #FFD700";
-    }
-
-    function goNext() {
-      const country = document.getElementById("country").value;
-      if (!selectedRole || !country) {
-        alert("⚠️ الرجاء اختيار الدور والدولة أولاً!");
-        return;
-      }
-      localStorage.setItem("role", selectedRole);
-      localStorage.setItem("country", country);
-      if (selectedRole === "driver") {
-        window.location.href = "driver.html";
-      } else {
-        window.location.href = "user.html";
-      }
+    function goTo(page) {
+      localStorage.setItem('roleSelected', page);
+      window.location.href = page;
     }
   </script>
-
 </body>
 </html>
