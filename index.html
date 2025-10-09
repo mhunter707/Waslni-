@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>وصلني - Waslni</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500&display=swap" rel="stylesheet">
+
   <style>
     body {
       font-family: "Cairo", sans-serif;
@@ -59,48 +60,24 @@
 
     .lang-switch {
       position: fixed;
-      bottom: 70px;
+      bottom: 20px;
       width: 100%;
       display: flex;
       justify-content: center;
       gap: 10px;
     }
 
-    .user-counter {
-      position: fixed;
-      bottom: 15px;
-      width: 100%;
-      text-align: center;
-      font-size: 18px;
-      color: #FFD700;
-    }
-
-    .counter-number {
-      font-weight: bold;
-      animation: colorShift 3s infinite alternate;
-    }
-
-    @keyframes colorShift {
-      from { color: #FFD700; }
-      to { color: #ffffff; }
-    }
-
-    /* تأثير الوميض */
-    .sparkle {
-      display: inline-block;
-      margin-left: 8px;
-      color: #FFD700;
+    /* ✅ تصميم عداد المستخدمين */
+    .user-count {
       font-size: 22px;
-      animation: sparkle 0.5s ease-in-out infinite alternate;
+      margin-top: 20px;
+      color: #FFD700;
+      transition: color 0.3s ease;
     }
 
-    @keyframes sparkle {
-      from { opacity: 0.3; transform: scale(1); }
-      to { opacity: 1; transform: scale(1.5); }
-    }
-
-    .sparkle-hide {
-      display: none;
+    .highlight {
+      color: #ffdf00;
+      text-shadow: 0 0 10px #ffdf00;
     }
   </style>
 </head>
@@ -108,6 +85,8 @@
 
   <h1 class="logo" id="title">🚗 وصلني</h1>
   <img src="https://i.imgur.com/gWWA7Hw.png" class="car" alt="car">
+
+  <div class="user-count" id="userCount">عدد المستخدمين الآن: 1250</div>
 
   <button id="startBtn">ابدأ</button>
 
@@ -117,14 +96,8 @@
     <button onclick="setLang('fr')">🇫🇷 Français</button>
   </div>
 
-  <!-- عداد المستخدمين -->
-  <div class="user-counter">
-    👥 عدد مستخدمي وصلني: 
-    <span class="counter-number" id="userCount">0</span>
-    <span id="sparkle" class="sparkle-hide">✨</span>
-  </div>
-
-  <audio id="rewardSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_eb2d437fa3.mp3?filename=correct-2-46134.mp3"></audio>
+  <!-- 🔊 صوت نغمة هادئة -->
+  <audio id="increaseSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_6b6c0b9b5a.mp3?filename=soft-notification-98207.mp3"></audio>
 
   <script src="lang.js"></script>
   <script type="module">
@@ -134,56 +107,43 @@
     const firebaseConfig = {
       apiKey: "AIzaSyDkJ4Fn5ZKUdN_R9tY2-dE2tSiWYiYR2xg",
       authDomain: "waslni-app1.firebaseapp.com",
+      databaseURL: "https://waslni-app1-default-rtdb.firebaseio.com/",
       projectId: "waslni-app1",
       storageBucket: "waslni-app1.firebasestorage.app",
       messagingSenderId: "860519858083",
-      appId: "1:860519858083:web:5effa5624b6fe0dbf3a416",
-      databaseURL: "https://waslni-app1-default-rtdb.firebaseio.com/"
+      appId: "1:860519858083:web:5effa5624b6fe0dbf3a416"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    let lastCount = 0;
+    const countEl = document.getElementById('userCount');
+    const sound = document.getElementById('increaseSound');
+    let currentCount = 1250;
 
-    async function updateUserCount() {
-      try {
-        const snapshot = await get(ref(db, "usersCount"));
-        if (snapshot.exists()) {
-          const newCount = snapshot.val();
-          const userCountEl = document.getElementById("userCount");
-          const sparkle = document.getElementById("sparkle");
-
-          userCountEl.textContent = newCount;
-
-          // عند زيادة 100 مستخدم
-          if (Math.floor(newCount / 100) > Math.floor(lastCount / 100)) {
-            document.getElementById("rewardSound").play();
-            sparkle.classList.remove("sparkle-hide");
-
-            setTimeout(() => {
-              sparkle.classList.add("sparkle-hide");
-            }, 2000);
-          }
-
-          lastCount = newCount;
-        }
-      } catch (error) {
-        console.error("خطأ في جلب عدد المستخدمين:", error);
+    // 🎯 تحديث العدد كل 10 ثوانٍ (محاكاة أو من قاعدة البيانات لاحقاً)
+    setInterval(() => {
+      const randomIncrease = Math.floor(Math.random() * 10);
+      const newCount = currentCount + randomIncrease;
+      
+      if (Math.floor(newCount / 100) > Math.floor(currentCount / 100)) {
+        sound.play(); // صوت عند كل زيادة 100
       }
-    }
 
-    updateUserCount();
-    setInterval(updateUserCount, 10000);
+      currentCount = newCount;
+      countEl.textContent = `عدد المستخدمين الآن: ${currentCount}`;
+      countEl.classList.add('highlight');
+      setTimeout(() => countEl.classList.remove('highlight'), 600);
 
-    document.getElementById("startBtn").onclick = () => {
+    }, 10000);
+
+    // الانتقال
+    document.getElementById('startBtn').onclick = () => {
       window.location.href = "role.html";
     };
 
     const lang = localStorage.getItem('lang') || 'ar';
     setLang(lang);
   </script>
-
-  <script src="auth.js" type="module"></script>
 </body>
 </html>
