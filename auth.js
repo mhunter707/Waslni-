@@ -17,12 +17,11 @@
   const auth = getAuth(app);
   const db = getDatabase(app);
 
-  // 🔐 تحقق من تسجيل الدخول
+  // ✅ التحقق من تسجيل الدخول
   onAuthStateChanged(auth, (user) => {
     if (!user) {
       window.location.href = "login.html";
     } else {
-      console.log("✅ تسجيل الدخول:", user.displayName);
       showLogoutButton();
       showUserCount();
     }
@@ -32,65 +31,104 @@
   function showLogoutButton() {
     const btn = document.createElement('button');
     btn.innerText = "🚪 تسجيل الخروج";
-    btn.style.position = "fixed";
-    btn.style.top = "15px";
-    btn.style.left = "15px";
-    btn.style.background = "#FFD700";
-    btn.style.color = "#000";
-    btn.style.border = "none";
-    btn.style.padding = "10px 15px";
-    btn.style.borderRadius = "25px";
-    btn.style.fontWeight = "bold";
-    btn.style.cursor = "pointer";
-    btn.style.zIndex = "1000";
+    Object.assign(btn.style, {
+      position: "fixed",
+      top: "15px",
+      left: "15px",
+      background: "#FFD700",
+      color: "#000",
+      border: "none",
+      padding: "10px 15px",
+      borderRadius: "25px",
+      fontWeight: "bold",
+      cursor: "pointer",
+      zIndex: "1000",
+      transition: "0.3s"
+    });
+    btn.onmouseenter = () => (btn.style.transform = "scale(1.1)");
+    btn.onmouseleave = () => (btn.style.transform = "scale(1)");
     btn.onclick = () => {
       signOut(auth).then(() => window.location.href = "login.html");
     };
     document.body.appendChild(btn);
   }
 
-  // 🔢 عداد المستخدمين
+  // 🌟 نظام النجوم + عداد المستخدمين
   async function showUserCount() {
-    try {
-      const dbRef = ref(db);
-      const snapshot = await get(child(dbRef, "users"));
-      const count = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
+    const counter = document.createElement('div');
+    counter.id = "userCounter";
+    Object.assign(counter.style, {
+      position: "fixed",
+      bottom: "20px",
+      right: "0",
+      left: "0",
+      margin: "auto",
+      width: "90%",
+      textAlign: "center",
+      padding: "12px",
+      borderRadius: "15px",
+      fontWeight: "bold",
+      fontSize: "17px",
+      background: "rgba(0, 0, 0, 0.7)",
+      color: "#FFD700",
+      border: "2px solid #FFD700",
+      boxShadow: "0 0 15px #FFD700",
+      transition: "all 0.6s ease",
+      animation: "pulse 2s infinite",
+      zIndex: "999"
+    });
+    document.body.appendChild(counter);
 
-      const counter = document.createElement('div');
-      counter.innerHTML = `
-        🌟 <b>${count.toLocaleString()}</b> مستخدم مسجل حتى الآن!
-        <br><span style="font-size:14px;color:#FFD700;">شارك التطبيق وكن أحد رواده 🚀</span>
-      `;
-      counter.style.position = "fixed";
-      counter.style.bottom = "15px";
-      counter.style.right = "0";
-      counter.style.left = "0";
-      counter.style.margin = "auto";
-      counter.style.width = "90%";
-      counter.style.textAlign = "center";
-      counter.style.background = "rgba(255, 215, 0, 0.1)";
-      counter.style.border = "1px solid #FFD700";
-      counter.style.color = "#FFD700";
-      counter.style.padding = "10px";
-      counter.style.borderRadius = "12px";
-      counter.style.fontWeight = "bold";
-      counter.style.animation = "pulse 2s infinite";
-      counter.style.zIndex = "999";
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes pulse {
+        0% { transform: scale(1); box-shadow: 0 0 10px #FFD700; }
+        50% { transform: scale(1.05); box-shadow: 0 0 25px #fff15a; }
+        100% { transform: scale(1); box-shadow: 0 0 10px #FFD700; }
+      }
+      @keyframes glow {
+        0% { text-shadow: 0 0 10px #fff, 0 0 20px #FFD700; }
+        50% { text-shadow: 0 0 20px #fff, 0 0 40px #FFD700; }
+        100% { text-shadow: 0 0 10px #fff, 0 0 20px #FFD700; }
+      }
+    `;
+    document.head.appendChild(style);
 
-      document.body.appendChild(counter);
-
-      // حركة أنيقة
-      const style = document.createElement('style');
-      style.textContent = `
-        @keyframes pulse {
-          0% { transform: scale(1); opacity: 1; }
-          50% { transform: scale(1.05); opacity: 0.9; }
-          100% { transform: scale(1); opacity: 1; }
-        }
-      `;
-      document.head.appendChild(style);
-    } catch (err) {
-      console.error("❌ خطأ في تحميل عدد المستخدمين:", err);
+    // 🧠 تحديد عدد النجوم بناءً على عدد المستخدمين
+    function getStars(count) {
+      if (count >= 100000) return { stars: "🌠 نجم أسطوري", color: "#ff66ff" };
+      if (count >= 10000) return { stars: "⭐⭐⭐⭐⭐", color: "#00FFFF" };
+      if (count >= 1000) return { stars: "⭐⭐⭐⭐", color: "#FFD700" };
+      if (count >= 100) return { stars: "⭐⭐⭐", color: "#C0C0C0" };
+      if (count >= 10) return { stars: "⭐⭐", color: "#cd7f32" };
+      return { stars: "⭐", color: "#fff" };
     }
+
+    // 🔄 تحديث العداد والنجوم
+    async function updateCount() {
+      try {
+        const dbRef = ref(db);
+        const snapshot = await get(child(dbRef, "users"));
+        const count = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
+
+        const { stars, color } = getStars(count);
+
+        counter.innerHTML = `
+          🌍 <b style="color:${color};font-size:20px;">${count.toLocaleString()}</b> مستخدم
+          <br><span style="font-size:24px;animation:glow 2s infinite;color:${color};">${stars}</span>
+          <br><span style="font-size:13px;color:#fff;">شارك التطبيق لتصل إلى مستوى نجوم أعلى 🚀</span>
+        `;
+
+        counter.style.borderColor = color;
+        counter.style.boxShadow = `0 0 20px ${color}`;
+        counter.style.color = color;
+      } catch (err) {
+        counter.innerText = "⚠️ لم يتم تحميل عدد المستخدمين";
+        console.error(err);
+      }
+    }
+
+    await updateCount();
+    setInterval(updateCount, 10000);
   }
 </script>
