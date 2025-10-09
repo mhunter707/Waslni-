@@ -1,51 +1,78 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🚗 وصلني | Waslni</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <title>Waslni App</title>
+  <style>
+    body {
+      font-family: "Cairo", sans-serif;
+      background: linear-gradient(135deg, #000, #b8860b);
+      color: white;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    header {
+      padding: 20px;
+      font-size: 24px;
+      font-weight: bold;
+      background-color: rgba(0, 0, 0, 0.6);
+    }
+    main {
+      margin-top: 50px;
+    }
+    button {
+      background-color: gold;
+      color: black;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 25px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #f5c518;
+    }
+  </style>
 </head>
 <body>
-
-  <div class="overlay"></div>
-
-  <header>
-    <h1 class="logo" id="title">🚗 وصلني</h1>
-  </header>
-
-  <main class="content">
-    <p class="slogan">أفضل وسيلة للربط بين السائقين والناقلين في العالم العربي</p>
-
-    <div class="country-select">
-      <label for="country">🌍 اختر دولتك</label>
-      <select id="country">
-        <option value="LY">ليبيا</option>
-        <option value="SA">السعودية</option>
-        <option value="EG">مصر</option>
-        <option value="MA">المغرب</option>
-        <option value="TN">تونس</option>
-        <option value="DZ">الجزائر</option>
-      </select>
-    </div>
-
-    <button id="startBtn" class="glow-btn">ابدأ الآن</button>
+  <header>تطبيق وصلني</header>
+  <main>
+    <p>مرحبًا بك في تطبيق Waslni لنقل الركاب والبضائع 🚗📦</p>
+    <button id="startBtn">ابدأ الآن</button>
   </main>
 
-  <div class="lang-switch">
-    <button onclick="setLang('ar')">🇸🇦 عربي</button>
-    <button onclick="setLang('en')">🇬🇧 English</button>
-    <button onclick="setLang('fr')">🇫🇷 Français</button>
-  </div>
+  <script>
+    const startBtn = document.getElementById('startBtn');
+    startBtn.onclick = () => {
+      alert("سيتم توجيهك إلى واجهة التسجيل قريبًا");
+    };
+  </script>
 
-  <footer>
-    <p>© 2025 وصلني | Waslni</p>
-  </footer>
+  <!-- Firebase setup -->
+  <script type="module">
+    // استيراد أدوات Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+    import { getDatabase } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+    import { getStorage } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-storage.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
 
-  <audio id="clickSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_8bb64f9c8f.mp3?filename=click-124467.mp3"></audio>
+    // إعدادات مشروعك من Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDkJ4Fn5ZKUdN_R9tY2-dE2tSiWYiYR2xg",
+      authDomain: "waslni-app1.firebaseapp.com",
+      projectId: "waslni-app1",
+      storageBucket: "waslni-app1.appspot.com",
+      messagingSenderId: "860519858083",
+      appId: "1:860519858083:web:5effa5624b6fe0dbf3a416"
+    };
 
-  <script src="lang.js"></script>
-  <script src="app.js"></script>
+    // تشغيل Firebase داخل موقعك
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const storage = getStorage(app);
+    const auth = getAuth(app);
+  </script>
 </body>
 </html>
