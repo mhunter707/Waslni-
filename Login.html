@@ -19,13 +19,11 @@
       justify-content: center;
       align-items: center;
     }
-
     h1 {
       font-size: 36px;
       margin-bottom: 20px;
       text-shadow: 0 0 15px gold;
     }
-
     .form-container {
       background: rgba(255, 215, 0, 0.08);
       padding: 30px;
@@ -34,7 +32,6 @@
       width: 90%;
       max-width: 400px;
     }
-
     input {
       width: 90%;
       padding: 12px;
@@ -45,8 +42,8 @@
       color: gold;
       font-size: 16px;
       outline: none;
+      text-align: center;
     }
-
     button {
       width: 95%;
       padding: 12px;
@@ -60,40 +57,35 @@
       transition: 0.3s;
       margin-top: 10px;
     }
-
     button:hover {
       background: linear-gradient(135deg, #fff07a, #ffcd00);
       transform: scale(1.05);
     }
-
-    .toggle {
+    #recaptcha-container {
       margin-top: 15px;
-      color: #ccc;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .toggle:hover {
-      color: gold;
-      text-decoration: underline;
     }
   </style>
 </head>
 <body>
 
-  <h1>🚗 مرحبًا بك في وصّلني</h1>
+  <h1>📱 تسجيل الدخول برقم الهاتف</h1>
+
   <div class="form-container">
-    <input type="email" id="email" placeholder="البريد الإلكتروني">
-    <input type="password" id="password" placeholder="كلمة المرور">
-    <button id="loginBtn">تسجيل الدخول</button>
-    <button id="signupBtn" style="display:none;">إنشاء حساب</button>
-    <div class="toggle" id="toggleMode">ليس لديك حساب؟ إنشاء حساب</div>
+    <div id="step1">
+      <input type="tel" id="phoneNumber" placeholder="أدخل رقم الهاتف (مثال: +218912345678)">
+      <div id="recaptcha-container"></div>
+      <button id="sendOtpBtn">إرسال رمز التحقق</button>
+    </div>
+
+    <div id="step2" style="display:none;">
+      <input type="text" id="otpCode" placeholder="أدخل رمز التحقق">
+      <button id="verifyOtpBtn">تأكيد الرمز</button>
+    </div>
   </div>
 
-  <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+    import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
     import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
     const firebaseConfig = {
@@ -110,54 +102,57 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const loginBtn = document.getElementById("loginBtn");
-    const signupBtn = document.getElementById("signupBtn");
-    const toggle = document.getElementById("toggleMode");
-    let isSignup = false;
+    const phoneInput = document.getElementById("phoneNumber");
+    const otpInput = document.getElementById("otpCode");
+    const step1 = document.getElementById("step1");
+    const step2 = document.getElementById("step2");
 
-    toggle.onclick = () => {
-      isSignup = !isSignup;
-      if (isSignup) {
-        loginBtn.style.display = "none";
-        signupBtn.style.display = "block";
-        toggle.textContent = "لديك حساب؟ تسجيل الدخول";
-      } else {
-        loginBtn.style.display = "block";
-        signupBtn.style.display = "none";
-        toggle.textContent = "ليس لديك حساب؟ إنشاء حساب";
+    const sendOtpBtn = document.getElementById("sendOtpBtn");
+    const verifyOtpBtn = document.getElementById("verifyOtpBtn");
+
+    // إعداد reCAPTCHA
+    window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+      size: "normal",
+      callback: (response) => console.log("reCAPTCHA تم التحقق منه ✅"),
+      "expired-callback": () => alert("انتهت صلاحية التحقق، حاول مرة أخرى.")
+    });
+
+    // إرسال الرمز
+    sendOtpBtn.onclick = async () => {
+      const phone = phoneInput.value;
+      if (!phone.startsWith("+")) {
+        alert("⚠️ الرجاء كتابة الرقم مع رمز الدولة (مثال: +218...)");
+        return;
+      }
+
+      try {
+        const confirmation = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
+        window.confirmationResult = confirmation;
+        step1.style.display = "none";
+        step2.style.display = "block";
+        alert("✅ تم إرسال رمز التحقق إلى رقمك");
+      } catch (error) {
+        alert("⚠️ خطأ أثناء إرسال الرمز: " + error.message);
       }
     };
 
-    signupBtn.onclick = async () => {
-      const email = emailInput.value;
-      const password = passwordInput.value;
+    // التحقق من الرمز
+    verifyOtpBtn.onclick = async () => {
+      const code = otpInput.value;
       try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
+        const result = await window.confirmationResult.confirm(code);
+        const user = result.user;
         await set(ref(db, "users/" + user.uid), {
-          email: email,
+          phone: user.phoneNumber,
           createdAt: new Date().toISOString()
         });
-        alert("✅ تم إنشاء الحساب بنجاح");
-        window.location.href = "role.html"; // ← الانتقال بعد التسجيل
+        alert("✅ تم تسجيل الدخول بنجاح!");
+        window.location.href = "role.html";
       } catch (error) {
-        alert("⚠️ خطأ: " + error.message);
-      }
-    };
-
-    loginBtn.onclick = async () => {
-      const email = emailInput.value;
-      const password = passwordInput.value;
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-        alert("✅ تم تسجيل الدخول بنجاح");
-        window.location.href = "role.html"; // ← الانتقال بعد الدخول
-      } catch (error) {
-        alert("⚠️ خطأ: " + error.message);
+        alert("⚠️ رمز غير صحيح، حاول مرة أخرى.");
       }
     };
   </script>
+
 </body>
 </html>
