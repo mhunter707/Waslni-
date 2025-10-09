@@ -144,6 +144,59 @@
 
     const lang = localStorage.getItem('lang') || 'ar';
     setLang(lang);
+    <!-- عرض عدد المستخدمين الحقيقي -->
+<div id="usersDisplay" style="
+  text-align:center;
+  font-size:22px;
+  color:#FFD700;
+  margin-top:20px;
+  font-weight:bold;
+">
+  عدد المستخدمين الآن: <span id="userCount">0</span>
+</div>
+
+<!-- كود التحديث -->
+<script type="module">
+  // استيراد Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+  // إعداد الاتصال
+  const firebaseConfig = {
+    databaseURL: "https://waslni-app1-default-rtdb.firebaseio.com/"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const userCountEl = document.getElementById("userCount");
+  const usersRef = ref(db, "userscount");
+
+  let lastCount = 0;
+
+  // تحديث العدد تلقائيًا
+  onValue(usersRef, (snapshot) => {
+    const count = snapshot.val();
+    userCountEl.textContent = count;
+
+    // تأثير اللون
+    userCountEl.style.color = "#" + Math.floor(Math.random() * 16777215).toString(16);
+
+    // تشغيل صوت تشجيعي عند 100، 200، 300...
+    if (count % 100 === 0 && count !== 0 && count !== lastCount) {
+      const sound = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
+      sound.play();
+    }
+    lastCount = count;
+  });
+
+  // تحديث كل 10 ثواني
+  setInterval(() => {
+    onValue(usersRef, (snapshot) => {
+      const count = snapshot.val();
+      userCountEl.textContent = count;
+    });
+  }, 10000);
+</script>
   </script>
 </body>
 </html>
