@@ -1,0 +1,117 @@
+body {
+  font-family: "Cairo", sans-serif;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  color: #FFD700;
+  background: linear-gradient(135deg, #000000, #1a1a1a, #111);
+  background-size: 400% 400%;
+  animation: bgMove 15s ease infinite;
+  overflow-x: hidden;
+}
+
+@keyframes bgMove {
+  0% {background-position: 0% 50%;}
+  50% {background-position: 100% 50%;}
+  100% {background-position: 0% 50%;}
+}
+
+header {
+  padding-top: 60px;
+}
+
+.logo {
+  font-size: 50px;
+  font-weight: bold;
+  text-shadow: 0 0 20px #FFD700, 0 0 40px #ffef8b;
+  animation: glow 3s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from { text-shadow: 0 0 10px #FFD700; }
+  to { text-shadow: 0 0 40px #fffb90, 0 0 80px #fff; }
+}
+
+.slogan {
+  font-size: 18px;
+  margin: 30px auto;
+  color: #fff;
+  max-width: 300px;
+  opacity: 0.8;
+}
+
+.country-select {
+  margin: 30px auto;
+}
+
+select {
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: #FFD700;
+  color: #000;
+  font-size: 16px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+select:hover {
+  transform: scale(1.05);
+}
+
+.glow-btn {
+  margin-top: 20px;
+  padding: 15px 40px;
+  background: #FFD700;
+  color: #000;
+  border: none;
+  border-radius: 30px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+  animation: pulse 2s infinite;
+}
+
+.glow-btn:hover {
+  transform: scale(1.1);
+  background: #fff76b;
+}
+
+@keyframes pulse {
+  0% {box-shadow: 0 0 10px #FFD700;}
+  50% {box-shadow: 0 0 40px #FFD700;}
+  100% {box-shadow: 0 0 10px #FFD700;}
+}
+
+.lang-switch {
+  position: fixed;
+  bottom: 20px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.lang-switch button {
+  background: #222;
+  color: #FFD700;
+  border: 1px solid #FFD700;
+  border-radius: 10px;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.lang-switch button:hover {
+  background: #FFD700;
+  color: #000;
+}
+
+footer {
+  position: fixed;
+  bottom: 5px;
+  width: 100%;
+  font-size: 14px;
+  opacity: 0.5;
+}
