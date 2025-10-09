@@ -3,145 +3,35 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🚗 Waslni - وصلني</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600&display=swap" rel="stylesheet">
-  <style>
-    /* 🌑 خلفية متدرجة متحركة */
-    body {
-      font-family: "Cairo", sans-serif;
-      background: radial-gradient(circle at center, #000, #111, #000);
-      color: #FFD700;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      animation: bgMove 10s linear infinite alternate;
-    }
-    @keyframes bgMove {
-      0% { background-position: center top; }
-      100% { background-position: center bottom; }
-    }
-
-    /* ✨ اللوجو */
-    .logo {
-      font-size: 46px;
-      margin-top: 100px;
-      font-weight: bold;
-      letter-spacing: 2px;
-      text-shadow: 0 0 20px #ffea00, 0 0 40px #ffea00;
-      animation: glow 3s ease-in-out infinite alternate;
-    }
-    @keyframes glow {
-      from { text-shadow: 0 0 5px #ffd700; }
-      to { text-shadow: 0 0 40px #ffea00; }
-    }
-
-    /* 🚘 السيارة المتحركة */
-    .car {
-      width: 170px;
-      margin: 60px auto;
-      animation: drive 3s ease-in-out infinite alternate;
-      filter: drop-shadow(0 0 10px #ffd700);
-    }
-    @keyframes drive {
-      from { transform: translateX(-50px); }
-      to { transform: translateX(50px); }
-    }
-
-    /* 🔘 زر البداية */
-    #startBtn {
-      border: none;
-      border-radius: 50px;
-      font-size: 22px;
-      padding: 15px 60px;
-      cursor: pointer;
-      background: linear-gradient(90deg, #FFD700, #ffec70);
-      color: #000;
-      font-weight: bold;
-      transition: 0.3s;
-      box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
-      50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 215, 0, 0.9); }
-    }
-    #startBtn:hover {
-      transform: scale(1.1);
-      background: #fff15a;
-    }
-
-    /* 🌍 أزرار اللغة */
-    .lang-switch {
-      position: fixed;
-      bottom: 20px;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-    }
-    .lang-switch button {
-      background: transparent;
-      border: 1px solid #FFD700;
-      color: #FFD700;
-      padding: 6px 16px;
-      border-radius: 30px;
-      font-size: 15px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    .lang-switch button:hover {
-      background: #FFD700;
-      color: #000;
-    }
-
-    /* ⚡ شاشة التحميل */
-    #loader {
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      background: #000;
-      top: 0;
-      left: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      z-index: 999;
-      color: #FFD700;
-    }
-    .spinner {
-      border: 4px solid #333;
-      border-top: 4px solid #FFD700;
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-      animation: spin 1.5s linear infinite;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* 🎵 صوت */
-    audio { display: none; }
-
-  </style>
+  <title>🚗 وصلني | Waslni</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- شاشة تحميل -->
-  <div id="loader">
-    <div class="spinner"></div>
-    <p style="margin-top:15px;">جاري التحميل...</p>
-  </div>
+  <div class="overlay"></div>
 
-  <!-- الصوت -->
-  <audio id="clickSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c9a0e1b7a0.mp3" preload="auto"></audio>
+  <header>
+    <h1 class="logo" id="title">🚗 وصلني</h1>
+  </header>
 
-  <h1 class="logo" id="title">🚗 وصلني</h1>
-  <img src="https://i.imgur.com/gWWA7Hw.png" class="car" alt="car">
+  <main class="content">
+    <p class="slogan">أفضل وسيلة للربط بين السائقين والناقلين في العالم العربي</p>
 
-  <button id="startBtn">ابدأ</button>
+    <div class="country-select">
+      <label for="country">🌍 اختر دولتك</label>
+      <select id="country">
+        <option value="LY">ليبيا</option>
+        <option value="SA">السعودية</option>
+        <option value="EG">مصر</option>
+        <option value="MA">المغرب</option>
+        <option value="TN">تونس</option>
+        <option value="DZ">الجزائر</option>
+      </select>
+    </div>
+
+    <button id="startBtn" class="glow-btn">ابدأ الآن</button>
+  </main>
 
   <div class="lang-switch">
     <button onclick="setLang('ar')">🇸🇦 عربي</button>
@@ -149,28 +39,13 @@
     <button onclick="setLang('fr')">🇫🇷 Français</button>
   </div>
 
+  <footer>
+    <p>© 2025 وصلني | Waslni</p>
+  </footer>
+
+  <audio id="clickSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_8bb64f9c8f.mp3?filename=click-124467.mp3"></audio>
+
   <script src="lang.js"></script>
-  <script>
-    const loader = document.getElementById('loader');
-    window.onload = () => {
-      setTimeout(() => loader.style.display = 'none', 1500);
-    };
-
-    const clickSound = document.getElementById('clickSound');
-    const startBtn = document.getElementById('startBtn');
-
-    startBtn.onclick = () => {
-      clickSound.play();
-      startBtn.style.transform = "scale(0.95)";
-      setTimeout(() => {
-        window.location.href = "role.html";
-      }, 400);
-    };
-
-    // تحميل اللغة
-    const lang = localStorage.getItem('lang') || 'ar';
-    setLang(lang);
-  </script>
-
+  <script src="app.js"></script>
 </body>
 </html>
