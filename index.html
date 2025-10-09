@@ -58,7 +58,6 @@
       justify-content: center;
       gap: 10px;
     }
-    /* عداد المستخدمين */
     .user-counter {
       position: fixed;
       bottom: 15px;
@@ -94,6 +93,8 @@
     👥 عدد مستخدمي وصلني: <span class="counter-number" id="userCount">0</span>
   </div>
 
+  <audio id="rewardSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_eb2d437fa3.mp3?filename=correct-2-46134.mp3"></audio>
+
   <script src="lang.js"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
@@ -112,20 +113,30 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
+    let lastCount = 0;
+
     async function updateUserCount() {
       try {
         const snapshot = await get(ref(db, "usersCount"));
         if (snapshot.exists()) {
-          document.getElementById("userCount").textContent = snapshot.val();
-        } else {
-          document.getElementById("userCount").textContent = "0";
+          const newCount = snapshot.val();
+          const userCountEl = document.getElementById("userCount");
+
+          // تحديث الرقم في الصفحة
+          userCountEl.textContent = newCount;
+
+          // التحقق إن تم تجاوز حد 100 جديد
+          if (Math.floor(newCount / 100) > Math.floor(lastCount / 100)) {
+            document.getElementById("rewardSound").play();
+          }
+
+          lastCount = newCount;
         }
       } catch (error) {
         console.error("خطأ في جلب عدد المستخدمين:", error);
       }
     }
 
-    // التحديث الأولي ثم كل 10 ثواني
     updateUserCount();
     setInterval(updateUserCount, 10000);
 
