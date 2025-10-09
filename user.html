@@ -1,88 +1,193 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Waslni - المستخدم</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🚗 Waslni | البحث عن سائق</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500&display=swap" rel="stylesheet">
   <style>
     body {
-      background-color: #121212;
-      color: white;
       font-family: "Cairo", sans-serif;
+      background: linear-gradient(180deg, #000000, #1a1a1a);
+      color: #FFD700;
       text-align: center;
+      margin: 0;
       padding: 20px;
     }
-    h1 { color: #FFD700; }
-    input, select, button {
-      width: 85%;
-      margin: 10px auto;
-      padding: 12px;
-      border-radius: 8px;
-      border: none;
-      font-size: 16px;
+
+    h1 {
+      text-shadow: 0 0 15px #FFD700;
+      animation: glow 2s infinite alternate;
     }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #FFD700; }
+      to { text-shadow: 0 0 30px #fff36b; }
+    }
+
+    .search-box {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px auto;
+    }
+
+    .search-box input, .search-box select {
+      background: rgba(255,255,255,0.1);
+      color: white;
+      border: 1px solid rgba(255,215,0,0.3);
+      border-radius: 10px;
+      padding: 10px;
+      width: 45%;
+      font-family: inherit;
+    }
+
     button {
       background-color: #FFD700;
       color: black;
       font-weight: bold;
-    }
-    .car {
-      border: 1px solid #FFD700;
+      border: none;
       border-radius: 10px;
-      padding: 10px;
+      padding: 10px 20px;
+      margin-top: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #fff37c;
+      transform: scale(1.05);
+    }
+
+    .driver-card {
+      background-color: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,215,0,0.3);
+      border-radius: 10px;
+      padding: 15px;
       margin: 10px auto;
-      width: 80%;
-      background-color: #1e1e1e;
+      width: 85%;
+      text-align: left;
+      color: white;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 0 10px rgba(255,215,0,0.2);
+      transition: 0.3s;
+    }
+
+    .driver-card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 25px rgba(255,215,0,0.4);
+    }
+
+    .driver-card img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .contact-btn {
+      display: inline-block;
+      background: #FFD700;
+      color: #000;
+      padding: 8px 12px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .contact-btn:hover {
+      background: #fff47d;
+    }
+
+    .no-result {
+      margin-top: 20px;
+      color: #999;
     }
   </style>
 </head>
 <body>
-  <h1 id="userTitle">🚗 البحث عن ناقل</h1>
 
-  <select id="type">
-    <option value="خاص">خاص</option>
-    <option value="بضائع">بضائع</option>
-    <option value="جر">جر سيارات</option>
-  </select>
+  <h1>🔍 البحث عن ناقل</h1>
 
-  <input id="from" type="text" placeholder="من المدينة">
-  <input id="to" type="text" placeholder="إلى المدينة">
+  <div class="search-box">
+    <input id="fromSearch" type="text" placeholder="من المدينة">
+    <input id="toSearch" type="text" placeholder="إلى المدينة">
+    <select id="typeSearch">
+      <option value="">الكل</option>
+      <option value="خاص">🚗 خاص</option>
+      <option value="بضائع">🚚 بضائع</option>
+      <option value="جر">🚜 جر سيارات</option>
+    </select>
+  </div>
 
-  <button onclick="searchCars()">بحث</button>
+  <button onclick="searchDrivers()">بحث 🔎</button>
+
   <div id="results"></div>
 
-  <script src="lang.js"></script>
-  <script>
-    const cars = [
-      { name: "نقل البضائع", type: "بضائع", from: "القاهرة", to: "الإسكندرية", price: "250 ريال" },
-      { name: "الناقل السريع", type: "خاص", from: "الرياض", to: "جدة", price: "300 ريال" }
-    ];
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
-    function searchCars() {
-      const type = document.getElementById('type').value;
-      const from = document.getElementById('from').value;
-      const to = document.getElementById('to').value;
-      const resultsDiv = document.getElementById('results');
-      const filtered = cars.filter(c => c.type.includes(type) && c.from.includes(from) && c.to.includes(to));
-      resultsDiv.innerHTML = '';
-      if (filtered.length === 0) {
-        resultsDiv.innerHTML = '<p>🚘 لا توجد نتائج حالياً</p>';
-      } else {
-        filtered.forEach(c => {
-          resultsDiv.innerHTML += `
-            <div class="car">
-              <h3>${c.name}</h3>
-              <p>${c.from} → ${c.to}</p>
-              <p>💰 ${c.price}</p>
-              <button>📞 تواصل</button>
-            </div>`;
-        });
+    const firebaseConfig = {
+      apiKey: "ضع مفتاح Firebase هنا",
+      authDomain: "ضع رابط المشروع هنا",
+      databaseURL: "ضع رابط قاعدة البيانات هنا",
+      projectId: "ضع معرف المشروع هنا",
+      storageBucket: "ضع التخزين هنا",
+      messagingSenderId: "ضع المعرف هنا",
+      appId: "ضع معرف التطبيق هنا"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const driverRef = ref(db, "drivers");
+    let allDrivers = [];
+
+    onValue(driverRef, snapshot => {
+      allDrivers = [];
+      snapshot.forEach(d => {
+        allDrivers.push(d.val());
+      });
+      displayDrivers(allDrivers);
+    });
+
+    function displayDrivers(list) {
+      const container = document.getElementById("results");
+      container.innerHTML = "";
+      if (list.length === 0) {
+        container.innerHTML = "<p class='no-result'>❌ لا توجد نتائج مطابقة</p>";
+        return;
       }
+
+      list.forEach(d => {
+        container.innerHTML += `
+          <div class="driver-card">
+            ${d.photo ? `<img src="${d.photo}" alt="صورة السائق">` : ""}
+            <h3>${d.name}</h3>
+            <p>🚚 النوع: ${d.type}</p>
+            <p>📍 من: ${d.from} → إلى: ${d.to}</p>
+            <p>💰 السعر: ${d.price}</p>
+            <a href="tel:${d.phone}" class="contact-btn">📞 اتصال</a>
+          </div>
+        `;
+      });
     }
 
-    const lang = localStorage.getItem('lang') || 'ar';
-    setLang(lang);
+    function searchDrivers() {
+      const from = document.getElementById("fromSearch").value.trim().toLowerCase();
+      const to = document.getElementById("toSearch").value.trim().toLowerCase();
+      const type = document.getElementById("typeSearch").value;
+
+      const filtered = allDrivers.filter(d =>
+        (!from || d.from.toLowerCase().includes(from)) &&
+        (!to || d.to.toLowerCase().includes(to)) &&
+        (!type || d.type === type)
+      );
+
+      displayDrivers(filtered);
+    }
   </script>
 </body>
 </html>
