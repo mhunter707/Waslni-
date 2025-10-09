@@ -1,64 +1,137 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Waslni - الناقل</title>
+  <title>🚛 Waslni - لوحة الناقل</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500&display=swap" rel="stylesheet">
   <style>
     body {
-      background-color: #000;
-      color: white;
+      background: radial-gradient(circle at top, #111 0%, #000 100%);
+      color: #FFD700;
       font-family: "Cairo", sans-serif;
       text-align: center;
-      padding: 20px;
+      padding: 10px;
+      margin: 0;
     }
-    h1 { color: #FFD700; }
-    input, select, button {
-      display: block;
-      width: 85%;
-      margin: 10px auto;
-      padding: 12px;
-      border-radius: 8px;
-      border: none;
+
+    header {
+      font-size: 30px;
+      font-weight: bold;
+      margin: 20px 0;
+      text-shadow: 0 0 15px #FFD700;
+    }
+
+    .input-box {
+      background-color: #1a1a1a;
+      padding: 15px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+      width: 90%;
+      margin: 15px auto;
+    }
+
+    input, select {
+      width: 90%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 10px;
+      border: 1px solid #FFD700;
+      background: #000;
+      color: #FFD700;
+      text-align: center;
       font-size: 16px;
     }
+
     button {
-      background-color: #FFD700;
-      color: black;
+      width: 90%;
+      padding: 12px;
+      background: linear-gradient(90deg, #FFD700, #ffeb7a);
+      color: #000;
       font-weight: bold;
-    }
-    .driver-card {
-      background-color: #1e1e1e;
-      border: 1px solid #FFD700;
       border-radius: 10px;
+      border: none;
+      margin-top: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 25px #FFD700;
+    }
+
+    .driver-card {
+      background-color: #1b1b1b;
+      border: 1px solid #FFD700;
+      border-radius: 12px;
       padding: 10px;
       margin: 10px auto;
-      width: 85%;
-      text-align: left;
+      width: 90%;
+      text-align: right;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .driver-card img {
+      width: 100%;
+      border-radius: 12px;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .actions button {
+      width: 48%;
+      padding: 8px;
+      font-size: 14px;
+    }
+
+    #search {
+      width: 90%;
+      padding: 10px;
+      margin: 15px auto;
+      border-radius: 10px;
+      border: 1px solid #FFD700;
+      background: #000;
+      color: #FFD700;
+      text-align: center;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
-  <h1 id="driverTitle">🚛 تسجيل الناقل</h1>
-  <input id="name" type="text" placeholder="اسم الناقل">
-  <select id="type">
-    <option value="خاص">خاص</option>
-    <option value="بضائع">بضائع</option>
-    <option value="جر">جر سيارات</option>
-  </select>
-  <input id="from" type="text" placeholder="من المدينة">
-  <input id="to" type="text" placeholder="إلى المدينة">
-  <input id="price" type="number" placeholder="السعر بالريال">
-  <input id="phone" type="text" placeholder="رقم الهاتف">
-  <input id="photo" type="file" accept="image/*">
-  <button onclick="addDriver()">تسجيل</button>
-  <h2>📋 الناقلين المسجلين</h2>
+
+  <header id="driverTitle">🚛 لوحة تحكم الناقل</header>
+
+  <div class="input-box">
+    <input id="name" type="text" placeholder="اسم الناقل">
+    <select id="type">
+      <option value="خاص">🚗 خاص</option>
+      <option value="بضائع">🚛 بضائع</option>
+      <option value="جر">🚙 جر سيارات</option>
+    </select>
+    <input id="from" type="text" placeholder="من المدينة">
+    <input id="to" type="text" placeholder="إلى المدينة">
+    <input id="price" type="number" placeholder="السعر (دينار)">
+    <input id="phone" type="text" placeholder="رقم الهاتف">
+    <input id="photo" type="file" accept="image/*">
+    <button onclick="addDriver()">📦 إضافة ناقل</button>
+  </div>
+
+  <input type="text" id="search" placeholder="🔍 ابحث عن ناقل بالمدينة أو النوع">
+
+  <h2>📋 قائمة الناقلين</h2>
   <div id="driversList"></div>
 
-  <script src="lang.js"></script>
   <script>
-    let drivers = [];
+    let drivers = JSON.parse(localStorage.getItem('drivers')) || [];
 
     function addDriver() {
       const name = document.getElementById('name').value;
@@ -76,33 +149,85 @@
 
       const reader = new FileReader();
       reader.onload = function(e) {
-        const newDriver = { name, type, from, to, price, phone, photo: e.target.result };
+        const newDriver = { id: Date.now(), name, type, from, to, price, phone, photo: e.target.result };
         drivers.push(newDriver);
+        saveDrivers();
         showDrivers();
       };
       if (photo) reader.readAsDataURL(photo);
-      else showDrivers();
+      else {
+        const newDriver = { id: Date.now(), name, type, from, to, price, phone, photo: "" };
+        drivers.push(newDriver);
+        saveDrivers();
+        showDrivers();
+      }
+
+      clearInputs();
     }
 
-    function showDrivers() {
+    function clearInputs() {
+      document.getElementById('name').value = '';
+      document.getElementById('from').value = '';
+      document.getElementById('to').value = '';
+      document.getElementById('price').value = '';
+      document.getElementById('phone').value = '';
+      document.getElementById('photo').value = '';
+    }
+
+    function saveDrivers() {
+      localStorage.setItem('drivers', JSON.stringify(drivers));
+    }
+
+    function deleteDriver(id) {
+      drivers = drivers.filter(d => d.id !== id);
+      saveDrivers();
+      showDrivers();
+    }
+
+    function shareDriver(driver) {
+      const text = `🚗 ناقل متاح عبر تطبيق وصلني!\nالاسم: ${driver.name}\nمن: ${driver.from} → إلى: ${driver.to}\nالسعر: ${driver.price} دينار\n📞 ${driver.phone}`;
+      if (navigator.share) {
+        navigator.share({ title: 'Waslni - ناقل متاح', text });
+      } else {
+        alert("📱 انسخ المعلومات وشاركها يدويًا:\n\n" + text);
+      }
+    }
+
+    function showDrivers(filter = "") {
       const list = document.getElementById('driversList');
       list.innerHTML = '';
-      drivers.forEach(d => {
+      const filtered = drivers.filter(d =>
+        d.name.includes(filter) || d.from.includes(filter) || d.to.includes(filter) || d.type.includes(filter)
+      );
+
+      if (filtered.length === 0) {
+        list.innerHTML = "<p>🚫 لا يوجد ناقلين مطابقين للبحث</p>";
+        return;
+      }
+
+      filtered.forEach(d => {
         list.innerHTML += `
           <div class="driver-card">
-            ${d.photo ? `<img src="${d.photo}" width="100%" style="border-radius:10px;">` : ''}
+            ${d.photo ? `<img src="${d.photo}">` : ""}
             <h3>${d.name}</h3>
-            <p>🚚 النوع: ${d.type}</p>
-            <p>📍 من: ${d.from} → إلى: ${d.to}</p>
-            <p>💰 السعر: ${d.price} ريال</p>
+            <p>🚘 النوع: ${d.type}</p>
+            <p>📍 من ${d.from} → إلى ${d.to}</p>
+            <p>💰 السعر: ${d.price} دينار</p>
             <p>📞 الهاتف: ${d.phone}</p>
+            <div class="actions">
+              <button onclick='shareDriver(${JSON.stringify(d)})'>📤 مشاركة</button>
+              <button onclick='deleteDriver(${d.id})'>🗑️ حذف</button>
+            </div>
           </div>
         `;
       });
     }
 
-    const lang = localStorage.getItem('lang') || 'ar';
-    setLang(lang);
+    document.getElementById("search").addEventListener("input", e => {
+      showDrivers(e.target.value);
+    });
+
+    showDrivers();
   </script>
 </body>
 </html>
