@@ -15,25 +15,30 @@
       padding: 0;
       overflow: hidden;
     }
+
     .logo {
       font-size: 45px;
       margin-top: 80px;
       font-weight: bold;
       animation: glow 2s infinite alternate;
     }
+
     @keyframes glow {
       from { text-shadow: 0 0 5px #ffd700; }
       to { text-shadow: 0 0 20px #ffea00; }
     }
+
     .car {
       width: 180px;
       margin: 50px auto;
       animation: moveCar 3s linear infinite alternate;
     }
+
     @keyframes moveCar {
-      from {transform: translateX(-40px);}
-      to {transform: translateX(40px);}
+      from { transform: translateX(-40px); }
+      to { transform: translateX(40px); }
     }
+
     button {
       border: none;
       border-radius: 30px;
@@ -46,10 +51,12 @@
       margin: 10px;
       transition: 0.3s;
     }
+
     button:hover {
       transform: scale(1.1);
       background-color: #fff15a;
     }
+
     .lang-switch {
       position: fixed;
       bottom: 70px;
@@ -58,6 +65,7 @@
       justify-content: center;
       gap: 10px;
     }
+
     .user-counter {
       position: fixed;
       bottom: 15px;
@@ -66,13 +74,33 @@
       font-size: 18px;
       color: #FFD700;
     }
+
     .counter-number {
       font-weight: bold;
       animation: colorShift 3s infinite alternate;
     }
+
     @keyframes colorShift {
       from { color: #FFD700; }
       to { color: #ffffff; }
+    }
+
+    /* تأثير الوميض */
+    .sparkle {
+      display: inline-block;
+      margin-left: 8px;
+      color: #FFD700;
+      font-size: 22px;
+      animation: sparkle 0.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes sparkle {
+      from { opacity: 0.3; transform: scale(1); }
+      to { opacity: 1; transform: scale(1.5); }
+    }
+
+    .sparkle-hide {
+      display: none;
     }
   </style>
 </head>
@@ -80,6 +108,7 @@
 
   <h1 class="logo" id="title">🚗 وصلني</h1>
   <img src="https://i.imgur.com/gWWA7Hw.png" class="car" alt="car">
+
   <button id="startBtn">ابدأ</button>
 
   <div class="lang-switch">
@@ -90,7 +119,9 @@
 
   <!-- عداد المستخدمين -->
   <div class="user-counter">
-    👥 عدد مستخدمي وصلني: <span class="counter-number" id="userCount">0</span>
+    👥 عدد مستخدمي وصلني: 
+    <span class="counter-number" id="userCount">0</span>
+    <span id="sparkle" class="sparkle-hide">✨</span>
   </div>
 
   <audio id="rewardSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_eb2d437fa3.mp3?filename=correct-2-46134.mp3"></audio>
@@ -121,13 +152,18 @@
         if (snapshot.exists()) {
           const newCount = snapshot.val();
           const userCountEl = document.getElementById("userCount");
+          const sparkle = document.getElementById("sparkle");
 
-          // تحديث الرقم في الصفحة
           userCountEl.textContent = newCount;
 
-          // التحقق إن تم تجاوز حد 100 جديد
+          // عند زيادة 100 مستخدم
           if (Math.floor(newCount / 100) > Math.floor(lastCount / 100)) {
             document.getElementById("rewardSound").play();
+            sparkle.classList.remove("sparkle-hide");
+
+            setTimeout(() => {
+              sparkle.classList.add("sparkle-hide");
+            }, 2000);
           }
 
           lastCount = newCount;
