@@ -1,138 +1,142 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Waslni App</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>وصلني - Waslni</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600&display=swap" rel="stylesheet">
   <style>
     body {
-      margin: 0;
-      font-family: 'Tajawal', sans-serif;
-      background: linear-gradient(135deg, #000, #bfa14a);
-      color: white;
+      font-family: "Cairo", sans-serif;
+      background: radial-gradient(circle at top, #000000 30%, #1a1a1a 100%);
+      color: #FFD700;
       text-align: center;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
     }
 
-    header {
-      background-color: rgba(0, 0, 0, 0.7);
-      padding: 15px;
-      font-size: 24px;
+    .logo {
+      font-size: 45px;
+      margin-top: 80px;
       font-weight: bold;
-      border-bottom: 2px solid gold;
+      animation: glow 2s infinite alternate;
+      letter-spacing: 2px;
     }
 
-    .container {
-      padding: 20px;
+    @keyframes glow {
+      from { text-shadow: 0 0 5px #ffd700; }
+      to { text-shadow: 0 0 25px #ffea00; }
     }
 
-    input, button {
-      padding: 10px;
-      margin: 5px;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
+    .car {
+      width: 200px;
+      margin: 50px auto;
+      animation: moveCar 3s ease-in-out infinite alternate;
+      filter: drop-shadow(0 0 20px gold);
     }
 
-    input {
-      width: 80%;
-      background-color: #222;
-      color: white;
+    @keyframes moveCar {
+      from {transform: translateX(-50px);}
+      to {transform: translateX(50px);}
+    }
+
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
     }
 
     button {
-      background-color: gold;
-      color: black;
-      font-weight: bold;
+      border: none;
+      border-radius: 30px;
+      font-size: 20px;
+      padding: 14px 40px;
       cursor: pointer;
+      background: linear-gradient(135deg, #FFD700, #b89600);
+      color: #000;
+      font-weight: bold;
       transition: 0.3s;
+      width: 80%;
+      max-width: 300px;
+      box-shadow: 0 0 10px rgba(255,215,0,0.5);
     }
 
     button:hover {
-      background-color: #ffda6a;
+      transform: scale(1.1);
+      background: linear-gradient(135deg, #fff07a, #ffcd00);
+      box-shadow: 0 0 20px rgba(255,215,0,0.8);
     }
 
-    .driver-card {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid gold;
-      border-radius: 15px;
-      padding: 10px;
-      margin: 10px 0;
+    .lang-switch {
+      position: fixed;
+      bottom: 20px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .footer-text {
+      position: fixed;
+      bottom: 70px;
+      width: 100%;
+      text-align: center;
+      color: #999;
+      font-size: 14px;
     }
 
   </style>
 </head>
 <body>
-  <header>🚗 تطبيق وصلني - السائقين</header>
-  <div class="container">
-    <h2>إضافة سائق جديد</h2>
-    <input id="name" type="text" placeholder="اسم السائق">
-    <input id="price" type="text" placeholder="سعر النقل">
-    <input id="phone" type="text" placeholder="رقم الهاتف">
-    <button id="addDriver">إضافة</button>
 
-    <h2>قائمة السائقين</h2>
-    <div id="driverList"></div>
+  <h1 class="logo" id="title">🚗 وصلني</h1>
+  <img src="https://i.imgur.com/gWWA7Hw.png" class="car" alt="car">
+
+  <div class="button-container">
+    <button id="startBtn">🚀 ابدأ</button>
+    <button id="chatBtn">💬 الدردشة</button>
   </div>
 
-  <!-- Firebase Setup -->
-  <script type="module">
-    // استيراد Firebase SDK
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+  <div class="footer-text">تطبيق وصّلني - النقل بسهولة وأناقة ✨</div>
 
-    // إعداد بيانات مشروعك
+  <div class="lang-switch">
+    <button onclick="setLang('ar')">🇸🇦 عربي</button>
+    <button onclick="setLang('en')">🇬🇧 English</button>
+    <button onclick="setLang('fr')">🇫🇷 Français</button>
+  </div>
+
+  <!-- Firebase Config -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
     const firebaseConfig = {
       apiKey: "AIzaSyDkJ4Fn5ZKUdN_R9tY2-dE2tSiWYiYR2xg",
       authDomain: "waslni-app1.firebaseapp.com",
-      databaseURL: "https://waslni-app1-default-rtdb.firebaseio.com/",
       projectId: "waslni-app1",
       storageBucket: "waslni-app1.firebasestorage.app",
       messagingSenderId: "860519858083",
       appId: "1:860519858083:web:5effa5624b6fe0dbf3a416"
     };
-
-    // تهيئة Firebase
     const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    // إضافة سائق جديد
-    document.getElementById('addDriver').addEventListener('click', () => {
-      const name = document.getElementById('name').value;
-      const price = document.getElementById('price').value;
-      const phone = document.getElementById('phone').value;
-
-      if (name && price && phone) {
-        push(ref(db, "drivers"), {
-          name: name,
-          price: price,
-          phone: phone
-        });
-
-        alert("✅ تم إضافة السائق بنجاح!");
-        document.getElementById('name').value = "";
-        document.getElementById('price').value = "";
-        document.getElementById('phone').value = "";
-      } else {
-        alert("⚠️ يرجى ملء جميع الحقول!");
-      }
-    });
-
-    // عرض السائقين المضافين
-    const driverList = document.getElementById('driverList');
-    onValue(ref(db, "drivers"), (snapshot) => {
-      driverList.innerHTML = "";
-      snapshot.forEach((childSnapshot) => {
-        const driver = childSnapshot.val();
-        const div = document.createElement("div");
-        div.className = "driver-card";
-        div.innerHTML = `
-          <h3>${driver.name}</h3>
-          <p>💰 السعر: ${driver.price}</p>
-          <p>📞 الهاتف: ${driver.phone}</p>
-        `;
-        driverList.appendChild(div);
-      });
-    });
   </script>
+
+  <script src="lang.js"></script>
+  <script>
+    const startBtn = document.getElementById('startBtn');
+    const chatBtn = document.getElementById('chatBtn');
+
+    startBtn.onclick = () => {
+      window.location.href = "role.html";
+    };
+
+    chatBtn.onclick = () => {
+      window.location.href = "chat.html";
+    };
+
+    const lang = localStorage.getItem('lang') || 'ar';
+    setLang(lang);
+  </script>
+
 </body>
 </html>
