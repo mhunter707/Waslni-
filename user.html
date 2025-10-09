@@ -67,11 +67,11 @@
       padding: 15px;
       margin: 10px auto;
       width: 85%;
-      text-align: left;
       color: white;
       backdrop-filter: blur(6px);
       box-shadow: 0 0 10px rgba(255,215,0,0.2);
       transition: 0.3s;
+      text-align: left;
     }
 
     .driver-card:hover {
@@ -85,7 +85,7 @@
       margin-bottom: 10px;
     }
 
-    .contact-btn {
+    .contact-btn, .fav-btn, .chat-btn {
       display: inline-block;
       background: #FFD700;
       color: #000;
@@ -93,17 +93,44 @@
       border-radius: 8px;
       text-decoration: none;
       font-weight: bold;
+      margin: 4px;
       transition: 0.3s;
     }
 
-    .contact-btn:hover {
-      background: #fff47d;
+    .fav-btn.active {
+      background: #ff5e5e;
+      color: white;
     }
 
-    .no-result {
-      margin-top: 20px;
-      color: #999;
+    .stars {
+      color: gold;
+      font-size: 20px;
     }
+
+    .chat-box {
+      background-color: rgba(255,255,255,0.1);
+      padding: 10px;
+      border-radius: 10px;
+      display: none;
+      text-align: right;
+      margin-top: 10px;
+    }
+
+    .chat-box input {
+      width: 75%;
+      border: none;
+      border-radius: 8px;
+      padding: 5px;
+    }
+
+    .chat-box button {
+      background-color: #FFD700;
+      color: black;
+      padding: 5px 10px;
+      border-radius: 8px;
+      border: none;
+    }
+
   </style>
 </head>
 <body>
@@ -125,7 +152,6 @@
 
   <div id="results"></div>
 
-  <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
@@ -161,33 +187,68 @@
         return;
       }
 
-      list.forEach(d => {
+      const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+
+      list.forEach((d, i) => {
+        const isFav = favorites.includes(d.phone);
         container.innerHTML += `
           <div class="driver-card">
             ${d.photo ? `<img src="${d.photo}" alt="صورة السائق">` : ""}
-            <h3>${d.name}</h3>
+            <h3>${d.name} ${d.vehicle ? `(${d.vehicle})` : ""}</h3>
             <p>🚚 النوع: ${d.type}</p>
             <p>📍 من: ${d.from} → إلى: ${d.to}</p>
             <p>💰 السعر: ${d.price}</p>
+            <p class="stars">⭐ ${d.rating ? d.rating : "بدون تقييم بعد"}</p>
+
             <a href="tel:${d.phone}" class="contact-btn">📞 اتصال</a>
+            <button class="fav-btn ${isFav ? "active" : ""}" onclick="toggleFavorite('${d.phone}')">❤️</button>
+            <button class="chat-btn" onclick="toggleChat(${i})">💬 دردشة</button>
+
+            <div class="chat-box" id="chat-${i}">
+              <input type="text" placeholder="اكتب رسالة...">
+              <button onclick="sendMessage(${i})">إرسال</button>
+            </div>
           </div>
         `;
       });
     }
 
-    function searchDrivers() {
+    window.toggleFavorite = (phone) => {
+      let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+      if (favorites.includes(phone)) {
+        favorites = favorites.filter(f => f !== phone);
+      } else {
+        favorites.push(phone);
+      }
+      localStorage.setItem("favorites", JSON.stringify(favorites));
+      displayDrivers(allDrivers);
+    };
+
+    window.toggleChat = (i) => {
+      const chatBox = document.getElementById(`chat-${i}`);
+      chatBox.style.display = chatBox.style.display === "block" ? "none" : "block";
+    };
+
+    window.sendMessage = (i) => {
+      const chatBox = document.getElementById(`chat-${i}`);
+      const input = chatBox.querySelector("input");
+      if (input.value.trim()) {
+        alert("💬 تم إرسال الرسالة (سيتم تفعيل الدردشة الكاملة عبر Firebase قريبًا)");
+        input.value = "";
+      }
+    };
+
+    window.searchDrivers = () => {
       const from = document.getElementById("fromSearch").value.trim().toLowerCase();
       const to = document.getElementById("toSearch").value.trim().toLowerCase();
       const type = document.getElementById("typeSearch").value;
-
       const filtered = allDrivers.filter(d =>
         (!from || d.from.toLowerCase().includes(from)) &&
         (!to || d.to.toLowerCase().includes(to)) &&
         (!type || d.type === type)
       );
-
       displayDrivers(filtered);
-    }
+    };
   </script>
 </body>
 </html>
